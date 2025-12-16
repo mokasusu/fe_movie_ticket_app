@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '/models/movie.dart';
 import '../../screens/detailMovie/movie_detail_screen.dart';
 import '../../services/api/movie_service.dart';
+import '../../theme/colors.dart';
 
 class ComingSoonSlider extends StatelessWidget {
   const ComingSoonSlider({super.key});
@@ -14,7 +15,7 @@ class ComingSoonSlider extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        // Tiêu đề
+        // 🎬 Tiêu đề section
         const Padding(
           padding: EdgeInsets.fromLTRB(16.0, 24.0, 16.0, 16.0),
           child: Text(
@@ -22,7 +23,7 @@ class ComingSoonSlider extends StatelessWidget {
             style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
-              color: Colors.black87,
+              color: AppColors.textPrimary, // chữ trắng điện ảnh
             ),
           ),
         ),
@@ -33,7 +34,11 @@ class ComingSoonSlider extends StatelessWidget {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const SizedBox(
                 height: cardHeight,
-                child: Center(child: CircularProgressIndicator()),
+                child: Center(
+                  child: CircularProgressIndicator(
+                    color: AppColors.gold, // loading vàng
+                  ),
+                ),
               );
             }
 
@@ -43,7 +48,7 @@ class ComingSoonSlider extends StatelessWidget {
                 child: const Center(
                   child: Text(
                     "Lỗi tải dữ liệu",
-                    style: TextStyle(color: Colors.red),
+                    style: TextStyle(color: AppColors.red),
                   ),
                 ),
               );
@@ -52,7 +57,12 @@ class ComingSoonSlider extends StatelessWidget {
             if (!snapshot.hasData || snapshot.data!.isEmpty) {
               return SizedBox(
                 height: cardHeight,
-                child: const Center(child: Text("Không có phim sắp chiếu")),
+                child: const Center(
+                  child: Text(
+                    "Không có phim sắp chiếu",
+                    style: TextStyle(color: AppColors.textMuted),
+                  ),
+                ),
               );
             }
 
@@ -87,9 +97,9 @@ class ComingSoonSlider extends StatelessWidget {
                           borderRadius: BorderRadius.circular(12.0),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              blurRadius: 5,
-                              offset: const Offset(0, 3),
+                              color: Colors.black.withOpacity(0.6), // bóng đổ đậm hơn cho dark UI
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
                             ),
                           ],
                         ),
@@ -98,13 +108,13 @@ class ComingSoonSlider extends StatelessWidget {
                           child: Stack(
                             fit: StackFit.expand,
                             children: [
-                              // Poster luôn có
+                              // Poster
                               Image.network(
                                 movie.anhPosterDoc,
                                 fit: BoxFit.cover,
                               ),
 
-                              // Gradient + tên phim + thể loại + nút đặt vé
+                              // 🎞 Overlay gradient điện ảnh
                               Positioned(
                                 bottom: 0,
                                 left: 0,
@@ -115,7 +125,7 @@ class ComingSoonSlider extends StatelessWidget {
                                     gradient: LinearGradient(
                                       colors: [
                                         Colors.transparent,
-                                        Colors.black.withOpacity(0.85)
+                                        AppColors.bgPrimary.withOpacity(0.9),
                                       ],
                                       begin: Alignment.topCenter,
                                       end: Alignment.bottomCenter,
@@ -128,7 +138,7 @@ class ComingSoonSlider extends StatelessWidget {
                                       Text(
                                         movie.tenPhim,
                                         style: const TextStyle(
-                                          color: Colors.white,
+                                          color: AppColors.textPrimary,
                                           fontWeight: FontWeight.bold,
                                           fontSize: 16,
                                         ),
@@ -138,7 +148,7 @@ class ComingSoonSlider extends StatelessWidget {
                                       Text(
                                         "Thể loại: ${movie.genres.join(', ')}",
                                         style: const TextStyle(
-                                          color: Colors.white70,
+                                          color: AppColors.textSecondary,
                                           fontSize: 12,
                                         ),
                                       ),
@@ -148,14 +158,17 @@ class ComingSoonSlider extends StatelessWidget {
                                 ),
                               ),
 
-                              // Tag độ tuổi
+                              // 🎟 Tag độ tuổi
                               Positioned(
                                 top: 8,
                                 right: 8,
                                 child: Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 6,
+                                    vertical: 3,
+                                  ),
                                   decoration: BoxDecoration(
-                                    color: Colors.red[700],
+                                    color: AppColors.red, // đỏ thảm đỏ
                                     borderRadius: BorderRadius.circular(4),
                                   ),
                                   child: Text(

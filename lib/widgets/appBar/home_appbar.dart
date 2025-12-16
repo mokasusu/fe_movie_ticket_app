@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../theme/colors.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   const CustomAppBar({super.key});
@@ -15,7 +16,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     // Thêm logic điều hướng đến trang lịch sử tại đây
   }
 
-  // Chiều cao mong muốn của App Bar, được yêu cầu bởi PreferredSizeWidget
+  // Chiều cao AppBar
   @override
   Size get preferredSize => const Size.fromHeight(64.0);
 
@@ -23,38 +24,53 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return AppBar(
       toolbarHeight: preferredSize.height,
-      backgroundColor: Colors.white,
-      elevation: 4.0, // Độ nổi nhẹ
-      shadowColor: Colors.black.withOpacity(0.1),
-      
-      // 1. Khu vực bên trái: Nút Hồ sơ Người dùng (Leading)
+
+      // 🎬 Nền tối điện ảnh
+      backgroundColor: AppColors.bgPrimary,
+
+      // Bóng đổ nhẹ, không gắt
+      elevation: 6.0,
+      shadowColor: Colors.black.withOpacity(0.4),
+
+      // 1️⃣ Bên trái – Hồ sơ người dùng
       leading: Padding(
         padding: const EdgeInsets.only(left: 8.0),
         child: IconButton(
-          icon: const Icon(Icons.account_circle, size: 28.0, color: Colors.indigo),
+          icon: const Icon(
+            Icons.account_circle,
+            size: 28.0,
+            color: AppColors.gold, // 🎟 accent vàng
+          ),
           onPressed: _handleProfileClick,
           tooltip: 'Hồ sơ người dùng',
         ),
       ),
 
-      // 2. Khu vực ở giữa: Logo Ứng dụng/Tiêu đề (Title)
+      // 2️⃣ Ở giữa – Logo / biểu tượng app
       title: const Row(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          Icon(Icons.movie, color: Colors.indigo, size: 28.0), // Icon Máy bay
+          Icon(
+            Icons.movie,
+            color: AppColors.gold, // 🎬 biểu tượng điện ảnh
+            size: 28.0,
+          ),
           SizedBox(width: 8.0),
         ],
       ),
-      centerTitle: true, // Đảm bảo tiêu đề được căn giữa
+      centerTitle: true,
 
-      // 3. Khu vực bên phải: Nút Lịch sử Đặt vé (Actions)
+      // 3️⃣ Bên phải – Lịch sử đặt vé
       actions: <Widget>[
         IconButton(
-          icon: const Icon(Icons.confirmation_num, color: Colors.indigo),
+          icon: const Icon(
+            Icons.confirmation_num,
+            color: AppColors.gold,
+          ),
           onPressed: _handleHistoryClick,
           tooltip: 'Lịch sử Đặt vé',
         ),
-        const SizedBox(width: 8.0), // Khoảng cách nhỏ ở cuối
+        const SizedBox(width: 8.0),
       ],
     );
   }

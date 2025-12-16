@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import '../../models/voucher.dart';
+import '../../theme/colors.dart';
 
 class VoucherListScreen extends StatelessWidget {
   final List<Voucher> vouchers;
-  final String title; // Tiêu đề AppBar
-  final bool showHistoryButton; // Có hiện nút lịch sử không
+  final String title;
+  final bool showHistoryButton;
 
   const VoucherListScreen({
     super.key,
@@ -16,9 +17,18 @@ class VoucherListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.bgPrimary,
       appBar: AppBar(
-        title: Text(title),
-        backgroundColor: Colors.indigo,
+        title: Text(
+          title,
+          style: const TextStyle(
+            color: AppColors.textPrimary,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        backgroundColor: AppColors.bgSecondary,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: AppColors.textPrimary),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
@@ -29,14 +39,13 @@ class VoucherListScreen extends StatelessWidget {
               icon: const Icon(Icons.history),
               tooltip: 'Lịch sử voucher',
               onPressed: () {
-                // Chỉ mở màn hình voucher đã dùng
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (_) => VoucherListScreen(
-                      vouchers: vouchers, // Thay bằng list voucher đã sử dụng
+                      vouchers: vouchers,
                       title: "Voucher đã dùng",
-                      showHistoryButton: false, // Không hiện nút lịch sử nữa
+                      showHistoryButton: false,
                     ),
                   ),
                 );
@@ -54,14 +63,17 @@ class VoucherListScreen extends StatelessWidget {
             margin: const EdgeInsets.only(bottom: 16),
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: v.backgroundColor.withOpacity(0.25),
+              color: AppColors.bgSecondary,
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: v.backgroundColor, width: 1.5),
+              border: Border.all(
+                color: v.backgroundColor.withOpacity(0.6),
+                width: 1.2,
+              ),
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // ICON VOUCHER
+                /// ICON
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
@@ -76,7 +88,7 @@ class VoucherListScreen extends StatelessWidget {
                 ),
                 const SizedBox(width: 16),
 
-                // TEXT INFO
+                /// INFO
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -86,51 +98,78 @@ class VoucherListScreen extends StatelessWidget {
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
+                          color: AppColors.textPrimary,
                         ),
                       ),
                       const SizedBox(height: 6),
                       Text(
                         v.MoTa,
-                        style: const TextStyle(fontSize: 14, color: Colors.black87),
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: AppColors.textSecondary,
+                        ),
                       ),
                       const SizedBox(height: 8),
+
                       Row(
-                        children: [
-                          const Icon(Icons.discount, size: 18, color: Colors.red),
-                          const SizedBox(width: 6),
-                          Text("Giảm: ${v.GiaGiam}", style: const TextStyle(fontSize: 14)),
+                        children: const [
+                          Icon(Icons.discount,
+                              size: 18, color: AppColors.gold),
+                          SizedBox(width: 6),
                         ],
                       ),
-                      const SizedBox(height: 4),
+                      Text(
+                        "Giảm: ${v.GiaGiam}",
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+
+                      const SizedBox(height: 6),
                       Row(
-                        children: [
-                          const Icon(Icons.calendar_today, size: 18, color: Colors.blue),
-                          const SizedBox(width: 6),
-                          Text("HSD: ${v.NgayHet}", style: const TextStyle(fontSize: 14)),
+                        children: const [
+                          Icon(Icons.calendar_today,
+                              size: 18, color: AppColors.neonBlue),
+                          SizedBox(width: 6),
                         ],
                       ),
-                      const SizedBox(height: 4),
+                      Text(
+                        "HSD: ${v.NgayHet}",
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+
+                      const SizedBox(height: 6),
                       Text(
                         "Số lượng: ${v.SoLuong}",
                         style: const TextStyle(
                           fontSize: 14,
-                          color: Colors.deepPurple,
+                          color: AppColors.gold,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                      const SizedBox(height: 6),
+
+                      const SizedBox(height: 10),
                       Container(
-                        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 6, horizontal: 12),
                         decoration: BoxDecoration(
                           color: v.TrangThai == "Hoạt động"
-                              ? Colors.green.withOpacity(0.15)
-                              : Colors.grey.withOpacity(0.15),
+                              ? AppColors.gold.withOpacity(0.15)
+                              : AppColors.disabled.withOpacity(0.2),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
-                          v.TrangThai == "Hoạt động" ? "Voucher khả dụng" : "Voucher đã dùng",
+                          v.TrangThai == "Hoạt động"
+                              ? "Voucher khả dụng"
+                              : "Voucher đã dùng",
                           style: TextStyle(
-                            color: v.TrangThai == "Hoạt động" ? Colors.green : Colors.grey,
+                            color: v.TrangThai == "Hoạt động"
+                                ? AppColors.gold
+                                : AppColors.textMuted,
                             fontWeight: FontWeight.bold,
                           ),
                         ),

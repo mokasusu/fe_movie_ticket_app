@@ -5,7 +5,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ShowtimeService {
   static const String baseUrl = "http://10.0.2.2:6969/mobile/showtimes";
-  
+
   static final FlutterSecureStorage storage = FlutterSecureStorage();
 
   /// Lấy token từ secure storage
@@ -23,7 +23,7 @@ class ShowtimeService {
   }
 
   /// Lấy suất chiếu theo rạp
-  static Future<List<Showtime>> fetchByCinema(String cinemaId) async {
+  static Future<List<Showtime>> fetchByCinema(int cinemaId) async {
     try {
       final response = await http.get(
         Uri.parse('$baseUrl/cinema/$cinemaId'),

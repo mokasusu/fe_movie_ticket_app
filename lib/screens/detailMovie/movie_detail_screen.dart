@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import '../../models/movie.dart';
 import '../../widgets/detail/trailer_curve_clipper.dart';
+import '../../theme/colors.dart';
 
 class MovieDetailPage extends StatelessWidget {
   final Movie movie;
@@ -18,7 +19,8 @@ class MovieDetailPage extends StatelessWidget {
     final posterWidth = 130.0;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.bgPrimary,
+
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -34,7 +36,7 @@ class MovieDetailPage extends StatelessWidget {
                       height: 260,
                       width: double.infinity,
                       decoration: BoxDecoration(
-                        color: Colors.black87,
+                        color: AppColors.bgSecondary,
                         image: _isValidUrl(movie.anhPosterNgang)
                             ? DecorationImage(
                                 image: NetworkImage(movie.anhPosterNgang),
@@ -48,8 +50,11 @@ class MovieDetailPage extends StatelessWidget {
                       ),
                       child: !_isValidUrl(movie.anhPosterNgang)
                           ? const Center(
-                              child: Icon(Icons.movie,
-                                  color: Colors.white, size: 80),
+                              child: Icon(
+                                Icons.movie,
+                                color: AppColors.textPrimary,
+                                size: 80,
+                              ),
                             )
                           : null,
                     ),
@@ -62,7 +67,8 @@ class MovieDetailPage extends StatelessWidget {
                     child: CircleAvatar(
                       backgroundColor: Colors.black.withOpacity(0.45),
                       child: IconButton(
-                        icon: const Icon(Icons.arrow_back, color: Colors.white),
+                        icon: const Icon(Icons.arrow_back,
+                            color: AppColors.textPrimary),
                         onPressed: () => Navigator.pop(context),
                       ),
                     ),
@@ -84,11 +90,14 @@ class MovieDetailPage extends StatelessWidget {
                         child: Container(
                           padding: const EdgeInsets.all(18),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.8),
+                            color: AppColors.gold.withOpacity(0.9),
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(Icons.play_arrow,
-                              size: 40, color: Colors.black),
+                          child: const Icon(
+                            Icons.play_arrow,
+                            size: 40,
+                            color: Colors.black,
+                          ),
                         ),
                       ),
                     ),
@@ -105,7 +114,7 @@ class MovieDetailPage extends StatelessWidget {
                         borderRadius: BorderRadius.circular(12),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.3),
+                            color: Colors.black.withOpacity(0.4),
                             blurRadius: 10,
                             offset: const Offset(0, 6),
                           ),
@@ -114,10 +123,12 @@ class MovieDetailPage extends StatelessWidget {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(12),
                         child: _isValidUrl(movie.anhPosterDoc)
-                            ? Image.network(movie.anhPosterDoc!, fit: BoxFit.cover)
+                            ? Image.network(movie.anhPosterDoc!,
+                                fit: BoxFit.cover)
                             : const Center(
                                 child: Icon(Icons.movie,
-                                    size: 70, color: Colors.grey),
+                                    size: 70,
+                                    color: AppColors.textMuted),
                               ),
                       ),
                     ),
@@ -138,7 +149,7 @@ class MovieDetailPage extends StatelessWidget {
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black87,
+                            color: AppColors.textPrimary,
                           ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
@@ -148,13 +159,13 @@ class MovieDetailPage extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
-                            color: Colors.red[700],
+                            color: AppColors.red,
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: Text(
                             movie.trangThai.name,
                             style: const TextStyle(
-                              color: Colors.white,
+                              color: AppColors.textPrimary,
                               fontWeight: FontWeight.bold,
                               fontSize: 14,
                             ),
@@ -179,17 +190,23 @@ class MovieDetailPage extends StatelessWidget {
                       movie.thoiLuong == null ? "" : "${movie.thoiLuong} phút"),
                   _infoRow("Đạo diễn", movie.daoDien),
                   _infoRow(
-                      "Diễn viên",
-                      movie.dienVien == null || movie.dienVien!.isEmpty
-                          ? ""
-                          : movie.dienVien!),
+                    "Diễn viên",
+                    movie.dienVien == null || movie.dienVien!.isEmpty
+                        ? ""
+                        : movie.dienVien!,
+                  ),
                   _infoRow("Ngày công chiếu", movie.ngayCongChieu),
-                  _infoRow("Độ tuổi",
+                  _infoRow(
+                      "Độ tuổi",
                       movie.doTuoi == null ? "" : "${movie.doTuoi}+"),
                   const SizedBox(height: 20),
                   Text(
                     movie.moTa,
-                    style: const TextStyle(fontSize: 18, height: 1.5),
+                    style: const TextStyle(
+                      fontSize: 18,
+                      height: 1.5,
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                   const SizedBox(height: 40),
                 ],
@@ -204,7 +221,7 @@ class MovieDetailPage extends StatelessWidget {
   void _showTrailerDialog(BuildContext context, String trailerUrl) {
     final videoId = YoutubePlayer.convertUrlToId(trailerUrl) ?? "";
 
-    YoutubePlayerController controller = YoutubePlayerController(
+    final controller = YoutubePlayerController(
       initialVideoId: videoId,
       flags: const YoutubePlayerFlags(autoPlay: true, mute: false),
     );
@@ -212,23 +229,20 @@ class MovieDetailPage extends StatelessWidget {
     showDialog(
       context: context,
       barrierColor: Colors.black.withOpacity(0.7),
-      barrierDismissible: true,
-      builder: (context) {
-        return Center(
-          child: Container(
-            width: MediaQuery.of(context).size.width * 0.9,
-            height: 220,
-            decoration: BoxDecoration(
-              color: Colors.black,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: YoutubePlayer(
-              controller: controller,
-              showVideoProgressIndicator: true,
-            ),
+      builder: (_) => Center(
+        child: Container(
+          width: MediaQuery.of(context).size.width * 0.9,
+          height: 220,
+          decoration: BoxDecoration(
+            color: AppColors.bgElevated,
+            borderRadius: BorderRadius.circular(12),
           ),
-        );
-      },
+          child: YoutubePlayer(
+            controller: controller,
+            showVideoProgressIndicator: true,
+          ),
+        ),
+      ),
     ).then((_) => controller.pause());
   }
 
@@ -245,13 +259,17 @@ class MovieDetailPage extends StatelessWidget {
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 18,
+                color: AppColors.textPrimary,
               ),
             ),
           ),
           Expanded(
             child: Text(
               value,
-              style: const TextStyle(fontSize: 18),
+              style: const TextStyle(
+                fontSize: 18,
+                color: AppColors.textSecondary,
+              ),
             ),
           ),
         ],

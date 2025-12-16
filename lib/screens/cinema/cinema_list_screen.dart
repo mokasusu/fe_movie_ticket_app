@@ -4,9 +4,10 @@ import '../../models/movie.dart';
 import '../../services/api/cinema_service.dart';
 import '../../services/api/showtime_service.dart';
 import '../showtime/showtime_screen.dart';
+import '../../theme/colors.dart';
 
 class CinemaListScreen extends StatefulWidget {
-  final Movie? selectedMovie; // Có thể null
+  final Movie? selectedMovie;
 
   const CinemaListScreen({
     super.key,
@@ -18,11 +19,10 @@ class CinemaListScreen extends StatefulWidget {
 }
 
 class _CinemaListScreenState extends State<CinemaListScreen> {
-  TextEditingController _searchController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
 
   List<Cinema> _baseCinemas = [];
   List<Cinema> _displayCinemas = [];
-
   bool _isLoading = true;
 
   @override
@@ -38,31 +38,18 @@ class _CinemaListScreenState extends State<CinemaListScreen> {
     super.dispose();
   }
 
-  // LẤY DỮ LIỆU RẠP TỪ API
   Future<void> _loadCinemasFromApi() async {
     setState(() => _isLoading = true);
 
     try {
-      // Lấy tất cả rạp
       final cinemas = await CinemaService.fetchCinemas();
-      print("All cinemas from API: ${cinemas.map((c) => c.maRap).toList()}");
-
       List<Cinema> filtered = cinemas;
 
-      // Nếu đã chọn phim → lọc rạp đang chiếu phim đó
       if (widget.selectedMovie != null) {
         final showtimes =
             await ShowtimeService.fetchByMovie(widget.selectedMovie!.maPhim);
-        print(
-            "Showtimes for movie ${widget.selectedMovie!.maPhim}: ${showtimes.map((s) => s.maRap).toList()}");
-
-        // Lấy danh sách mã rạp từ suất chiếu
         final cinemaIds = showtimes.map((s) => s.maRap).toSet();
-        print("Cinema IDs from showtimes: $cinemaIds");
-
-        // Filter rạp
         filtered = cinemas.where((c) => cinemaIds.contains(c.maRap)).toList();
-        print("Filtered cinemas: ${filtered.map((c) => c.maRap).toList()}");
       }
 
       if (!mounted) return;
@@ -72,61 +59,70 @@ class _CinemaListScreenState extends State<CinemaListScreen> {
         _displayCinemas = filtered;
         _isLoading = false;
       });
-    } catch (e) {
-      print("Error loading cinemas: $e");
+    } catch (_) {
       if (!mounted) return;
       setState(() => _isLoading = false);
     }
   }
 
-
-
   void _onSearchChanged() {
-    String query = _searchController.text.toLowerCase();
+    final query = _searchController.text.toLowerCase();
     setState(() {
       _displayCinemas = _baseCinemas
-          .where((cinema) => cinema.tenRap.toLowerCase().contains(query))
+          .where((c) => c.tenRap.toLowerCase().contains(query))
           .toList();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final String title =
+    final title =
         widget.selectedMovie != null ? "Chọn rạp" : "Danh sách rạp";
 
-    final String subTitle =
+    final subTitle =
         widget.selectedMovie?.tenPhim ?? "Chọn rạp bạn muốn đến";
 
     return Scaffold(
+      backgroundColor: AppColors.bgPrimary,
+
       appBar: AppBar(
-        backgroundColor: Colors.pinkAccent,
-        iconTheme: const IconThemeData(color: Colors.white),
+        backgroundColor: AppColors.bgSecondary,
+        iconTheme: const IconThemeData(color: AppColors.textPrimary),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title, style: const TextStyle(color: Colors.white, fontSize: 18)),
+            Text(title,
+                style: const TextStyle(
+                    color: AppColors.textPrimary, fontSize: 18)),
             Text(
               subTitle,
-              style: const TextStyle(color: Colors.white70, fontSize: 12),
+              style: const TextStyle(
+                  color: AppColors.textSecondary, fontSize: 12),
             ),
           ],
         ),
       ),
+
       body: Column(
         children: [
-          // Ô tìm kiếm
+          // SEARCH
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(16),
             child: TextField(
               controller: _searchController,
+              style: const TextStyle(color: AppColors.textPrimary),
               decoration: InputDecoration(
                 hintText: "Tìm tên rạp...",
-                prefixIcon: const Icon(Icons.search),
+                hintStyle:
+                    const TextStyle(color: AppColors.textMuted),
+                prefixIcon:
+                    const Icon(Icons.search, color: AppColors.textMuted),
+                filled: true,
+                fillColor: AppColors.bgSecondary,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
                 ),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16),
               ),
             ),
           ),
@@ -135,19 +131,23 @@ class _CinemaListScreenState extends State<CinemaListScreen> {
             child: _isLoading
                 ? const Center(
                     child: CircularProgressIndicator(
-                      color: Colors.pinkAccent,
+                      color: AppColors.gold,
                     ),
                   )
                 : _displayCinemas.isEmpty
                     ? const Center(
                         child: Text(
                           "Không có rạp nào",
-                          style: TextStyle(color: Colors.grey, fontSize: 16),
+                          style: TextStyle(
+                              color: AppColors.textMuted, fontSize: 16),
                         ),
                       )
                     : ListView.separated(
                         itemCount: _displayCinemas.length,
-                        separatorBuilder: (_, __) => const Divider(height: 1),
+                        separatorBuilder: (_, __) => const Divider(
+                          height: 1,
+                          color: AppColors.disabled,
+                        ),
                         itemBuilder: (context, index) {
                           final cinema = _displayCinemas[index];
 
@@ -156,33 +156,43 @@ class _CinemaListScreenState extends State<CinemaListScreen> {
                               width: 40,
                               height: 40,
                               decoration: BoxDecoration(
-                                color: Colors.pinkAccent.withOpacity(0.1),
+                                color: AppColors.gold.withOpacity(0.15),
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              child: const Icon(Icons.theater_comedy,
-                                  color: Colors.pinkAccent),
+                              child: const Icon(
+                                Icons.theater_comedy,
+                                color: AppColors.gold,
+                              ),
                             ),
-                            title: Text(cinema.tenRap,
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.w600)),
+                            title: Text(
+                              cinema.tenRap,
+                              style: const TextStyle(
+                                color: AppColors.textPrimary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                             subtitle: Text(
                               cinema.diaDiem,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                  color: AppColors.textSecondary),
                             ),
-                            trailing: const Icon(Icons.arrow_forward_ios,
-                                size: 14, color: Colors.grey),
+                            trailing: const Icon(
+                              Icons.arrow_forward_ios,
+                              size: 14,
+                              color: AppColors.textMuted,
+                            ),
                             onTap: () {
-                              // Navigator.push(
-                              //   context,
-                              //   MaterialPageRoute(
-                              //     builder: (_) => ShowtimeScreen(
-                              //       cinemaId: cinema.ma,
-                              //       selectedMovie: widget.selectedMovie,
-                              //     ),
-                              //   ),
-                              // );
-                              print("Chọn rạp: ${cinema.tenRap}");
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => ShowtimeScreen(
+                                    cinemaId: cinema.maRap,
+                                    selectedMovie: widget.selectedMovie,
+                                  ),
+                                ),
+                              );
                             },
                           );
                         },

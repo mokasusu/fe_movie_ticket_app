@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../models/promotion.dart';
+import '../../theme/colors.dart';
 
 class PromotionsSlider extends StatefulWidget {
   final List<Promotion> promotions;
@@ -7,7 +8,7 @@ class PromotionsSlider extends StatefulWidget {
   const PromotionsSlider({super.key, required this.promotions});
 
   @override
-  _PromotionsSliderState createState() => _PromotionsSliderState();
+  State<PromotionsSlider> createState() => _PromotionsSliderState();
 }
 
 class _PromotionsSliderState extends State<PromotionsSlider> {
@@ -19,7 +20,7 @@ class _PromotionsSliderState extends State<PromotionsSlider> {
     super.initState();
     _pageController = PageController(
       initialPage: 0,
-      viewportFraction: 1.0, // full width
+      viewportFraction: 1.0,
     );
   }
 
@@ -32,33 +33,39 @@ class _PromotionsSliderState extends State<PromotionsSlider> {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
-    final desiredHeight = screenHeight / 6; // chiều cao cố định
+    final desiredHeight = screenHeight / 6;
 
     return SafeArea(
-      top: false, // sát AppBar
+      top: false,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           SizedBox(
-            height: desiredHeight, // giữ chiều cao cố định
+            height: desiredHeight,
             child: PageView.builder(
               controller: _pageController,
               itemCount: widget.promotions.length,
               onPageChanged: (index) {
-                setState(() {
-                  _currentPage = index;
-                });
+                setState(() => _currentPage = index);
               },
-              physics: const PageScrollPhysics(), // chỉ lướt 1 trang
+              physics: const PageScrollPhysics(),
               itemBuilder: (context, index) {
                 final promo = widget.promotions[index];
+
                 return InkWell(
                   onTap: () {
-                    print('Clicked on: ${promo.title}');
+                    debugPrint('Clicked on: ${promo.title}');
                   },
                   child: Container(
                     decoration: BoxDecoration(
-                      color: promo.color.withOpacity(0.9),
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          AppColors.bgSecondary,
+                          AppColors.bgElevated,
+                        ],
+                      ),
                     ),
                     padding: const EdgeInsets.all(18.0),
                     alignment: Alignment.centerLeft,
@@ -68,14 +75,14 @@ class _PromotionsSliderState extends State<PromotionsSlider> {
                       children: [
                         const Icon(
                           Icons.movie_filter,
-                          color: Colors.white,
+                          color: AppColors.gold,
                           size: 28,
                         ),
                         const SizedBox(height: 10),
                         Text(
                           promo.title,
                           style: const TextStyle(
-                            color: Colors.white,
+                            color: AppColors.textPrimary,
                             fontWeight: FontWeight.w900,
                             fontSize: 18,
                           ),
@@ -90,19 +97,22 @@ class _PromotionsSliderState extends State<PromotionsSlider> {
             ),
           ),
           const SizedBox(height: 10),
+
           // Dot indicator
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: List.generate(widget.promotions.length, (index) {
+              final isActive = _currentPage == index;
+
               return AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
-                margin: const EdgeInsets.symmetric(horizontal: 4.0),
-                width: _currentPage == index ? 12.0 : 8.0,
-                height: _currentPage == index ? 12.0 : 8.0,
+                margin: const EdgeInsets.symmetric(horizontal: 4),
+                width: isActive ? 12 : 8,
+                height: isActive ? 12 : 8,
                 decoration: BoxDecoration(
-                  color: _currentPage == index
-                      ? Colors.blueAccent
-                      : Colors.grey.shade400,
+                  color: isActive
+                      ? AppColors.gold
+                      : AppColors.textMuted,
                   shape: BoxShape.circle,
                 ),
               );

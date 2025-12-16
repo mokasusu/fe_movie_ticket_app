@@ -4,7 +4,7 @@ import '../../widgets/card/promo_slider.dart';
 import '../../widgets/card/movie_card_slider.dart';
 import '../../widgets/card/voucher_slider.dart';
 import '../../widgets/card/coming_soon_slider.dart';
-
+import '../../theme/colors.dart';
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
@@ -12,7 +12,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const CustomAppBar(),
-      backgroundColor: Colors.blue,
+      backgroundColor: AppColors.bgPrimary,
       // Body home
       body: SingleChildScrollView(
         child: Column(

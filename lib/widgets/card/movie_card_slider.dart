@@ -3,7 +3,7 @@ import '../../models/movie.dart';
 import '../../screens/detailMovie/movie_detail_screen.dart';
 import '../../services/api/movie_service.dart';
 import '../../screens/cinema/cinema_list_screen.dart';
-
+import '../../theme/colors.dart';
 
 class MovieCard extends StatefulWidget {
   const MovieCard({super.key});
@@ -61,7 +61,7 @@ class _MovieCardState extends State<MovieCard> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => MovieDetailPage(movie: movie),
+        builder: (_) => MovieDetailPage(movie: movie),
       ),
     );
   }
@@ -70,7 +70,7 @@ class _MovieCardState extends State<MovieCard> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => CinemaListScreen(selectedMovie: movie),
+        builder: (_) => CinemaListScreen(selectedMovie: movie),
       ),
     );
   }
@@ -80,6 +80,7 @@ class _MovieCardState extends State<MovieCard> {
     final bodyHeight = MediaQuery.of(context).size.height -
         kToolbarHeight -
         MediaQuery.of(context).padding.top;
+
     final cardHeight = bodyHeight / 2;
     const double cardWidth = 300;
 
@@ -88,9 +89,12 @@ class _MovieCardState extends State<MovieCard> {
     }
 
     if (_movies.isEmpty) {
-      return const Padding(
-        padding: EdgeInsets.all(16),
-        child: Text("Không có phim đang chiếu", style: TextStyle(fontSize: 18)),
+      return Padding(
+        padding: const EdgeInsets.all(16),
+        child: Text(
+          "Không có phim đang chiếu",
+          style: TextStyle(color: AppColors.textSecondary, fontSize: 18),
+        ),
       );
     }
 
@@ -105,7 +109,7 @@ class _MovieCardState extends State<MovieCard> {
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
-                color: Colors.black87,
+                color: AppColors.textPrimary,
               ),
             ),
           ),
@@ -118,38 +122,31 @@ class _MovieCardState extends State<MovieCard> {
             itemBuilder: (context, index) {
               final movie = _movies[index];
 
-              // Poster
-              final poster = movie.anhPosterDoc;
-
               return AnimatedBuilder(
                 animation: _pageController,
                 builder: (context, child) {
-                  double positionScale = 1.0;
+                  double scale = 1.0;
                   if (_pageController.position.haveDimensions) {
-                    double page = _pageController.page ?? index.toDouble();
-                    double diff = (index - page).clamp(-1.0, 1.0);
-                    positionScale = (1 - diff.abs() * 0.1).clamp(0.9, 1.0);
+                    final page = _pageController.page ?? index.toDouble();
+                    scale = (1 - (index - page).abs() * 0.1).clamp(0.9, 1.0);
                   }
 
-                  final scale = positionScale * _tapScale;
-
                   return Center(
-                    child: GestureDetector(
-                      onTapDown: _onTapDown,
-                      onTapUp: _onTapUp,
-                      onTapCancel: _onTapCancel,
-                      onTap: () => _openMovieDetail(movie),
-                      child: Transform.scale(
-                        scale: scale,
+                    child: Transform.scale(
+                      scale: scale * _tapScale,
+                      child: GestureDetector(
+                        onTapDown: _onTapDown,
+                        onTapUp: _onTapUp,
+                        onTapCancel: _onTapCancel,
+                        onTap: () => _openMovieDetail(movie),
                         child: Container(
                           width: cardWidth,
                           height: cardHeight,
-                          margin: const EdgeInsets.symmetric(vertical: 12, horizontal: 2),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(16),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.2),
+                                color: AppColors.bgPrimary.withOpacity(0.6),
                                 blurRadius: 12,
                                 offset: const Offset(0, 6),
                               ),
@@ -160,33 +157,27 @@ class _MovieCardState extends State<MovieCard> {
                             child: Stack(
                               fit: StackFit.expand,
                               children: [
-                                // Poster
-                                Image.network(
-                                  poster,
-                                  fit: BoxFit.cover,
-                                ),
+                                Image.network(movie.anhPosterDoc, fit: BoxFit.cover),
 
-                                // Tag độ tuổi
                                 Positioned(
                                   top: 10,
                                   right: 10,
                                   child: Container(
                                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                     decoration: BoxDecoration(
-                                      color: Colors.red[700],
+                                      color: AppColors.red,
                                       borderRadius: BorderRadius.circular(6),
                                     ),
                                     child: Text(
                                       "${movie.doTuoi}",
                                       style: const TextStyle(
-                                        color: Colors.white,
+                                        color: AppColors.textPrimary,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
                                   ),
                                 ),
 
-                                // Gradient + tên phim + thể loại + nút đặt vé
                                 Positioned(
                                   bottom: 0,
                                   left: 0,
@@ -195,49 +186,43 @@ class _MovieCardState extends State<MovieCard> {
                                     padding: const EdgeInsets.all(16),
                                     decoration: BoxDecoration(
                                       gradient: LinearGradient(
-                                        colors: [
-                                          Colors.transparent,
-                                          Colors.black.withOpacity(0.85)
-                                        ],
                                         begin: Alignment.topCenter,
                                         end: Alignment.bottomCenter,
+                                        colors: [
+                                          Colors.transparent,
+                                          AppColors.bgPrimary.withOpacity(0.95),
+                                        ],
                                       ),
                                     ),
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
-                                      mainAxisSize: MainAxisSize.min,
                                       children: [
                                         Text(
                                           movie.tenPhim,
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
                                           style: const TextStyle(
-                                            color: Colors.white,
+                                            color: AppColors.textPrimary,
                                             fontSize: 24,
                                             fontWeight: FontWeight.bold,
                                           ),
-                                          maxLines: 2,
-                                          overflow: TextOverflow.ellipsis,
                                         ),
                                         const SizedBox(height: 4),
                                         Text(
                                           "Thể loại: ${movie.genres.join(', ')}",
                                           style: const TextStyle(
-                                            color: Colors.white70,
-                                            fontSize: 14,
+                                            color: AppColors.textSecondary,
                                           ),
                                         ),
                                         const SizedBox(height: 12),
                                         Center(
                                           child: ElevatedButton.icon(
-                                            onPressed: () => _openCinemaScreen(movie),//mở màn hình chọn rạp
+                                            onPressed: () => _openCinemaScreen(movie),
                                             icon: const Icon(Icons.confirmation_number),
                                             label: const Text("ĐẶT VÉ NGAY"),
                                             style: ElevatedButton.styleFrom(
-                                              backgroundColor: Colors.pinkAccent,
-                                              foregroundColor: Colors.white,
-                                              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(10),
-                                              ),
+                                              backgroundColor: AppColors.gold,
+                                              foregroundColor: AppColors.bgPrimary,
                                             ),
                                           ),
                                         ),

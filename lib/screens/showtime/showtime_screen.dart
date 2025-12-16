@@ -1,224 +1,177 @@
-// import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
+import '../../widgets/appBar/showtime_appbar.dart';
+import '../../widgets/showtime/choice_date.dart';
+import '../../widgets/card/showtime_card.dart';
+import '../../models/movie.dart';
+import '../../models/showtime.dart';
+import '../../screens/seat/seat_selection_screen.dart';
+import '../../theme/colors.dart';
 
-// import '../../widgets/appBar/showtime_appbar.dart';
-// import '../../widgets/showtime/choice_date.dart';
-// import '../../widgets/card/showtime_card.dart';
-// import '../../models/movie.dart';
-// import '../../models/showtime.dart';
-// import '../../screens/seat/seat_selection_screen.dart';
+import '../../services/api/showtime_service.dart';
+import '../../services/api/movie_service.dart';
+import '../../services/api/cinema_service.dart';
 
-// class ShowtimeScreen extends StatefulWidget {
-//   final String? cinemaId;
-//   final Movie? selectedMovie;
+class ShowtimeScreen extends StatefulWidget {
+  final int? cinemaId;       // Luồng chọn rạp → xem phim
+  final Movie? selectedMovie;   // Luồng chọn phim → xem rạp
 
-//   const ShowtimeScreen({super.key, this.cinemaId, this.selectedMovie});
+  const ShowtimeScreen({super.key, this.cinemaId, this.selectedMovie});
 
-//   @override
-//   State<ShowtimeScreen> createState() => _ShowtimeScreenState();
-// }
+  @override
+  State<ShowtimeScreen> createState() => _ShowtimeScreenState();
+}
 
-// class _ShowtimeScreenState extends State<ShowtimeScreen> {
-//   DateTime selectedDate = DateTime.now();
-//   bool isLoading = false;
-//   int _loadId = 0;
-//   Map<String, List<Showtime>> movieShowtimes = {};
+class _ShowtimeScreenState extends State<ShowtimeScreen> {
+  DateTime selectedDate = DateTime.now();
+  bool isLoading = false;
 
-//   String getVietnameseDate(DateTime date) {
-//     final List<String> weekdays = [
-//       "Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"
-//     ];
-//     String thu = weekdays[date.weekday == 7 ? 0 : date.weekday];
-//     return "$thu, ngày ${date.day} tháng ${date.month} năm ${date.year}";
-//   }
+  List<Movie> allMovies = [];
+  List<Showtime> allShowtimes = [];
+  Map<String, List<Showtime>> movieShowtimes = {};
 
-//   // Lấy danh sách phim CÓ THỂ chiếu tại rạp
-//   List<Movie> getMovies() {
-//     if (widget.selectedMovie != null) return [widget.selectedMovie!];
+  String cinemaName = "";
 
-//     if (widget.cinemaId != null) {
-//       // Lấy danh sách ID phim có lịch chiếu tại rạp này
-//       final movieIds = mockShowtimes
-//           .where((s) => s.cinemaId == widget.cinemaId)
-//           .map((s) => s.movieId)
-//           .toSet();
-//       // Lọc danh sách Movie object từ ID
-//       return mockMovies.where((m) => movieIds.contains(m.MaPhim)).toList();
-//     }
-//     return [];
-//   }
+  @override
+  void initState() {
+    super.initState();
+    loadData();
+  }
 
-//   // Lọc suất chiếu theo phim và ngày
-//   List<Showtime> filterShowtimes(Movie movie, DateTime date) {
-//     if (widget.cinemaId == null) return [];
-//     return mockShowtimes
-//         .where((s) =>
-//             s.cinemaId == widget.cinemaId &&
-//             s.movieId == movie.MaPhim &&
-//             s.startTime.year == date.year &&
-//             s.startTime.month == date.month &&
-//             s.startTime.day == date.day)
-//         .toList();
-//   }
+  Future<void> loadData() async {
+    setState(() => isLoading = true);
 
-//   Future<void> _onDateSelected(DateTime date) async {
-//     final int currentId = ++_loadId;
+    allMovies = await MovieService.fetchAllMovies();
 
-//     setState(() {
-//       selectedDate = date;
-//       isLoading = true;
-//     });
+    if (widget.cinemaId != null) {
+      allShowtimes = await ShowtimeService.fetchByCinema(widget.cinemaId!);
+    } else if (widget.selectedMovie != null) {
+      allShowtimes =
+          await ShowtimeService.fetchByMovie(widget.selectedMovie!.maPhim);
+    }
 
-//     // Giả lập delay loading
-//     await Future.delayed(const Duration(milliseconds: 300));
+    _filterByDate(selectedDate);
 
-//     if (currentId != _loadId) return;
+    setState(() => isLoading = false);
+  }
 
-//     final movies = getMovies();
-//     final Map<String, List<Showtime>> newShowtimes = {};
+  void _filterByDate(DateTime date) {
+    final Map<String, List<Showtime>> newMap = {};
 
-//     for (var movie in movies) {
-//       newShowtimes[movie.MaPhim] = filterShowtimes(movie, date);
-//     }
+    for (var s in allShowtimes) {
+      if (s.tgBatDau.year == date.year &&
+          s.tgBatDau.month == date.month &&
+          s.tgBatDau.day == date.day) {
+        newMap.putIfAbsent(s.maPhim, () => []).add(s);
+      }
+    }
 
-//     if (!mounted) return;
+    movieShowtimes = newMap;
+  }
 
-//     setState(() {
-//       movieShowtimes = newShowtimes;
-//       isLoading = false;
-//     });
-//   }
+  Future<void> _onDateSelected(DateTime date) async {
+    setState(() {
+      selectedDate = date;
+      isLoading = true;
+    });
 
-//   @override
-//   void initState() {
-//     super.initState();
-//     WidgetsBinding.instance.addPostFrameCallback((_) {
-//       _onDateSelected(selectedDate);
-//     });
-//   }
+    await Future.delayed(const Duration(milliseconds: 150));
 
-//   @override
-//   Widget build(BuildContext context) {
-//     final cinemaName = widget.cinemaId != null
-//         ? cinemas.firstWhere((c) => c.ma == widget.cinemaId!).ten
-//         : '';
+    _filterByDate(date);
 
-//     final allMovies = getMovies();
+    setState(() => isLoading = false);
+  }
 
-//     // Chỉ lấy những phim THỰC SỰ có suất chiếu vào ngày đã chọn
-//     final activeMovies = allMovies.where((movie) {
-//       final showtimes = movieShowtimes[movie.MaPhim];
-//       return showtimes != null && showtimes.isNotEmpty;
-//     }).toList();
+  @override
+  Widget build(BuildContext context) {
+    final activeMovies = allMovies.where((movie) {
+      final showtimes = movieShowtimes[movie.maPhim];
+      return showtimes != null && showtimes.isNotEmpty;
+    }).toList();
 
-//     return Scaffold(
-//       appBar: const ShowtimeAppBar(),
-//       body: Stack(
-//         children: [
-//           Column(
-//             children: [
-//               // Hiển thị tên rạp (nếu có)
-//               if (cinemaName.isNotEmpty)
-//                 Container(
-//                   width: double.infinity,
-//                   padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
-//                   color: Colors.black,
-//                   child: Text(
-//                     cinemaName,
-//                     style: const TextStyle(
-//                       color: Colors.white,
-//                       fontSize: 17,
-//                       fontWeight: FontWeight.w600,
-//                     ),
-//                   ),
-//                 ),
+    return Scaffold(
+      backgroundColor: AppColors.bgPrimary,
+      appBar: const ShowtimeAppBar(),
+      body: Stack(
+        children: [
+          Column(
+            children: [
+              /// Tên rạp
+              if (cinemaName.isNotEmpty)
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+                  color: AppColors.bgSecondary,
+                  width: double.infinity,
+                  child: Text(
+                    cinemaName,
+                    style: const TextStyle(
+                      color: AppColors.textPrimary,
+                      fontSize: 17,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
 
-//               // Widget chọn ngày
-//               MovieDatePicker(
-//                 currentDate: selectedDate,
-//                 onDateSelected: _onDateSelected,
-//               ),
+              MovieDatePicker(
+                currentDate: selectedDate,
+                onDateSelected: _onDateSelected,
+              ),
 
-//               // Hiển thị ngày đã chọn bằng chữ
-//               Container(
-//                 width: double.infinity,
-//                 padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-//                 color: Colors.black,
-//                 child: Text(
-//                   getVietnameseDate(selectedDate),
-//                   style: const TextStyle(
-//                     color: Colors.white70,
-//                     fontSize: 14,
-//                     fontWeight: FontWeight.w500,
-//                     fontStyle: FontStyle.italic,
-//                   ),
-//                 ),
-//               ),
+              /// Thanh ngày chiếu
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                color: AppColors.bgSecondary,
+                child: Text(
+                  "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}",
+                  style: const TextStyle(
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+              ),
 
-//               const Divider(height: 1, color: Colors.grey),
+              Expanded(
+                child: activeMovies.isEmpty
+                    ? const Center(
+                        child: Text(
+                          "Không có suất chiếu",
+                          style: TextStyle(
+                            color: AppColors.textMuted,
+                          ),
+                        ),
+                      )
+                    : ListView.builder(
+                        itemCount: activeMovies.length,
+                        itemBuilder: (context, index) {
+                          final movie = activeMovies[index];
+                          final showtimes =
+                              movieShowtimes[movie.maPhim]!;
 
-//               // Danh sách phim và suất chiếu
-//               Expanded(
-//                 child: activeMovies.isEmpty
-//                     ? Center(
-//                         child: Column(
-//                           mainAxisAlignment: MainAxisAlignment.center,
-//                           children: const [
-//                             Icon(Icons.event_busy, size: 60, color: Colors.grey),
-//                             SizedBox(height: 16),
-//                             Text(
-//                               "Chưa có lịch chiếu",
-//                               style: TextStyle(
-//                                 color: Colors.black,
-//                                 fontSize: 18,
-//                                 fontWeight: FontWeight.w500,
-//                               ),
-//                             ),
-//                           ],
-//                         ),
-//                       )
-//                     : ListView.builder(
-//                         itemCount: activeMovies.length,
-//                         itemBuilder: (context, index) {
-//                           final movie = activeMovies[index];
-//                           final showtimes = movieShowtimes[movie.MaPhim]!;
+                          return ShowtimeCard(
+                            movie: movie,
+                            showtimes: showtimes,
+                            onShowtimeSelected: (s) {},
+                          );
+                        },
+                      ),
+              ),
+            ],
+          ),
 
-//                           return ShowtimeCard(
-//                             movie: movie,
-//                             showtimes: showtimes,
-//                             onShowtimeSelected: (Showtime s) {
-//                               // Chuyển sang màn hình chọn ghế
-//                               Navigator.push(
-//                                 context,
-//                                 MaterialPageRoute(
-//                                   builder: (context) => CinemaBookingScreen(
-//                                     showtime: s,                // Truyền suất chiếu
-//                                     movieTitle: movie.TenPhim,  // Truyền tên phim
-//                                     cinemaName: cinemaName,     // Truyền tên rạp
-//                                   ),
-//                                 ),
-//                               );
-//                             },
-//                           );
-//                         },
-//                       ),
-//               ),
-//             ],
-//           ),
-
-//           // Loading Indicator
-//           if (isLoading)
-//             Positioned.fill(
-//               child: Container(
-//                 color: Colors.black.withOpacity(0.5),
-//                 child: const Center(
-//                   child: CircularProgressIndicator(
-//                     color: Colors.redAccent,
-//                   ),
-//                 ),
-//               ),
-//             ),
-//         ],
-//       ),
-//     );
-//   }
-// }
+          /// Loading overlay
+          if (isLoading)
+            Positioned.fill(
+              child: Container(
+                color: AppColors.bgPrimary.withOpacity(0.6),
+                child: const Center(
+                  child: CircularProgressIndicator(
+                    color: AppColors.gold,
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
