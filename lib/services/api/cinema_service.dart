@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import '../../models/cinema.dart';
-import '../../api/dio_client.dart';         // Import DioClient chung
+import '../../api/dio_client.dart';
 
 class CinemaService {
   // DioClient đã cấu hình base url (.../mobile), chỉ cần đuôi path

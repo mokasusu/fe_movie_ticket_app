@@ -7,15 +7,33 @@ class UserService {
   static const String _userEndpoint = "/users";
 
   /// 1. Đăng ký (Khớp với @PostMapping)
+  static const String _endpoint = "/users";
+
   static Future<bool> registerUser(Map<String, dynamic> userData) async {
     try {
       final response = await DioClient.dio.post(
-        _userEndpoint,
-        data: userData,
+        _endpoint,
+        data: userData, // Dio tự động chuyển Map này thành JSON và set Header
       );
-      return response.statusCode == 200 || response.statusCode == 201;
+
+      // API tạo mới thường trả về 201 (Created) hoặc 200 (OK)
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        print("✅ Đăng ký thành công: ${response.data}");
+        return true;
+      }
+
+      return false;
+
+    } on DioException catch (e) {
+      // Xử lý lỗi chi tiết từ Server (VD: Email đã tồn tại, validation sai...)
+      if (e.response != null) {
+        print("🔥 Lỗi đăng ký (Server): ${e.response?.statusCode} - ${e.response?.data}");
+      } else {
+        print("🔥 Lỗi kết nối: ${e.message}");
+      }
+      return false;
     } catch (e) {
-      print("❌ Lỗi Đăng ký: $e");
+      print("🔥 Lỗi không xác định: $e");
       return false;
     }
   }
