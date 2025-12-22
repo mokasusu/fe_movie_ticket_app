@@ -28,7 +28,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     super.initState();
     // Khởi tạo giá trị ban đầu từ User được truyền vào
     _nameController = TextEditingController(text: widget.user.hoTen);
-    _phoneController = TextEditingController(text: widget.user.sdt);
     _emailController = TextEditingController(text: widget.user.email);
     
     // Format ngày sinh nếu có (Giả sử server trả về String)

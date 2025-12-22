@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../models/movie.dart';
+import '../../models/film_model.dart';
 import '../../screens/detailMovie/movie_detail_screen.dart';
 import '../../services/api/movie_service.dart';
 import '../../screens/cinema/cinema_list_screen.dart';
@@ -13,7 +13,7 @@ class MovieCard extends StatefulWidget {
 }
 
 class _MovieCardState extends State<MovieCard> {
-  List<Movie> _movies = [];
+  List<FilmResponse> _movies = [];
   bool _isLoading = true;
 
   double _tapScale = 1.0;
@@ -57,14 +57,14 @@ class _MovieCardState extends State<MovieCard> {
     setState(() => _tapScale = 1.0);
   }
 
-  void _openMovieDetail(Movie movie) {
+  void _openMovieDetail(FilmResponse movie) {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => MovieDetailPage(movie: movie)),
     );
   }
 
-  void _openCinemaScreen(Movie movie) {
+  void _openCinemaScreen(FilmResponse movie) {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => CinemaListScreen(selectedMovie: movie)),

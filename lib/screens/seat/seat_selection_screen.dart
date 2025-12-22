@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:home/models/showtime.dart';
 import 'package:intl/intl.dart';
-import '../../models/movie.dart';
+import '../../models/film_model.dart';
 import '../../models/cinema.dart';
 import '../../models/showtime.dart';
 import '../../models/seat.dart';
@@ -14,7 +14,7 @@ import '../../widgets/bottomBar/seat_bottom_bar.dart';
 import '../payment/pay_screen.dart';
 
 class SeatScreen extends StatefulWidget {
-  final Movie movie;
+  final FilmResponse movie;
   final Cinema cinema;
   final Showtime showtime;
   const SeatScreen({

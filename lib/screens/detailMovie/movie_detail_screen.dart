@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
-import '../../models/movie.dart';
+import '../../models/film_model.dart';
 import '../../widgets/detail/trailer_curve_clipper.dart';
 import '../../theme/colors.dart';
 
 class MovieDetailPage extends StatelessWidget {
-  final Movie movie;
+  final FilmResponse movie;
 
   const MovieDetailPage({super.key, required this.movie});
 
@@ -187,7 +187,7 @@ class MovieDetailPage extends StatelessWidget {
                         ? ""
                         : movie.dienVien!,
                   ),
-                  _infoRow("Ngày công chiếu", movie.ngayCongChieu),
+                  _infoRow("Ngày công chiếu", movie.ngayCongChieu.toString()),
                   _infoRow(
                       "Độ tuổi",
                       movie.doTuoi == null ? "" : "${movie.doTuoi}+"),

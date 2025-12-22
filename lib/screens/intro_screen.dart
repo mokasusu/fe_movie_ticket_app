@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart'; // Dùng cho file .json
-import '../../screens/login/login_screen.dart'; // Để chuyển hướng khi nhấn "Bắt đầu"
+import 'login_screen.dart'; // Để chuyển hướng khi nhấn "Bắt đầu"
 
 class IntroScreen extends StatelessWidget {
   const IntroScreen({super.key});

@@ -42,6 +42,10 @@ dependencies:
   lottie: ^2.4.0
   dio : ^5.2.1
   barcode_widget: ^2.0.4
+  mailer: ^6.1.0
+  jwt_decoder: ^2.0.1
+
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

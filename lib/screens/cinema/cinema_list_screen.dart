@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../models/cinema.dart';
-import '../../models/movie.dart';
+import '../../models/film_model.dart';
 import '../../services/api/cinema_service.dart';
 import '../showtime/showtime_screen.dart';
 import '../../theme/colors.dart';
@@ -42,7 +42,7 @@ class CinemaSearchBar extends StatelessWidget {
 
 // ===== CINEMA LIST SCREEN =====
 class CinemaListScreen extends StatefulWidget {
-  final Movie? selectedMovie;
+  final FilmResponse? selectedMovie;
 
   const CinemaListScreen({super.key, this.selectedMovie});
 

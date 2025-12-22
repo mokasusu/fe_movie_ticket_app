@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../theme/colors.dart';
-import '../../models/movie.dart';
+import '../../models/film_model.dart';
 import '../../models/cinema.dart';
 import '../../models/showtime.dart';
 
 class InfoTicket extends StatelessWidget {
-  final Movie movie;
+  final FilmResponse movie;
   final Cinema cinema;
   final Showtime showtime;
   final List<String> seatNumbers;

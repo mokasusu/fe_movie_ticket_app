@@ -9,7 +9,7 @@ class SeatService {
   static Future<List<String>> fetchBookedSeats(int showtimeId) async {
     try {
       // 1. Gọi API qua DioClient
-      final response = await DioClient.dio.get("$_endpoint/$showtimeId/booked");
+      final response = await DioClient.dio.get("$_endpoint/booked/$showtimeId");
 
       // 2. Xử lý dữ liệu
       if (response.statusCode == 200) {

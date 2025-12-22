@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '/models/movie.dart';
+import '/models/film_model.dart';
 import '../../screens/detailMovie/movie_detail_screen.dart';
 import '../../services/api/movie_service.dart';
 import '../../theme/colors.dart';
@@ -45,7 +45,7 @@ class ComingSoonSlider extends StatelessWidget {
           ),
         ),
 
-        FutureBuilder<List<Movie>>(
+        FutureBuilder<List<FilmResponse>>(
           future: MovieService.fetchMoviesComingSoon(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {

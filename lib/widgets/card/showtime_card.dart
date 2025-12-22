@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../../models/movie.dart';
+import '../../models/film_model.dart';
 import '../../models/showtime.dart';
 import '../../screens/detailMovie/movie_detail_screen.dart';
 import '../../theme/colors.dart';
 
 class ShowtimeCard extends StatelessWidget {
-  final Movie movie;
+  final FilmResponse movie;
   final List<Showtime> showtimes;
   final void Function(Showtime) onShowtimeSelected;
 

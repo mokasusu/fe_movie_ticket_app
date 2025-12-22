@@ -3,7 +3,6 @@ class User {
   final String hoTen;
   final String gioiTinh;
   final String ngaySinh;
-  final String sdt;
   final String email;
   final String matKhau;
   final String? anhURL;
@@ -13,29 +12,28 @@ class User {
     required this.hoTen,
     required this.gioiTinh,
     required this.ngaySinh,
-    required this.sdt,
     required this.email,
     required this.matKhau,
-    this.anhURL,
+    required this.anhURL
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      id: json['id'],
-      hoTen: json['hoTen'],
-      gioiTinh: json['gioiTinh'],
-      ngaySinh: json['ngaySinh'],
-      sdt: json['sdt'],
-      email: json['email'],
-      matKhau: json['matKhau'],
-      anhURL: json['anhURL'],
+      id: json['id'] ?? '',
+      hoTen: json['hoTen'] ?? '',
+      gioiTinh: json['gioiTinh'] ?? '',
+      ngaySinh: json['ngaySinh'] ?? '',
+      email: json['email'] ?? '',
+      matKhau: json['matKhau'] ?? '',
+      anhURL: json['anhURL'] ?? '',
     );
   }
+
   Map<String, dynamic> toJson() => {
+    "id": id,
     "hoTen": hoTen,
     "gioiTinh": gioiTinh,
     "ngaySinh": ngaySinh,
-    "sdt": sdt,
     "email": email,
     "matKhau": matKhau,
     "anhURL": anhURL,

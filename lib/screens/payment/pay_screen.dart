@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../theme/colors.dart';
-import '../../models/movie.dart';
+import '../../models/film_model.dart';
 import '../../models/food.dart';
 import '../../models/cinema.dart';
 import '../../models/showtime.dart';
@@ -9,7 +9,7 @@ import '../../widgets/appBar/pay_appbar.dart';
 import '../../widgets/pay/info_ticket.dart';
 
 class PayScreen extends StatelessWidget {
-  final Movie movie;
+  final FilmResponse movie;
   final Cinema cinema;
   final Showtime showtime;
   final List<String> seatNumbers;

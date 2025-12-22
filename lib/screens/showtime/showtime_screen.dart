@@ -3,7 +3,7 @@ import 'package:home/models/cinema.dart';
 import '../../widgets/appBar/showtime_appbar.dart';
 import '../../widgets/showtime/choice_date.dart';
 import '../../widgets/card/showtime_card.dart';
-import '../../models/movie.dart';
+import '../../models/film_model.dart';
 import '../../models/showtime.dart';
 import '../../theme/colors.dart';
 import '../../screens/seat/seat_selection_screen.dart';
@@ -13,7 +13,7 @@ import '../../services/api/movie_service.dart';
 
 class ShowtimeScreen extends StatefulWidget {
   final Cinema selectedCinema;
-  final Movie? selectedMovie;
+  final FilmResponse? selectedMovie;
 
   const ShowtimeScreen({
     super.key,
@@ -33,7 +33,7 @@ class _ShowtimeScreenState extends State<ShowtimeScreen> {
 
   Map<String, List<Showtime>> movieShowtimes = {};
 
-  Map<String, Movie> movieMap = {};
+  Map<String, FilmResponse> movieMap = {};
 
   @override
   void initState() {
@@ -69,7 +69,7 @@ class _ShowtimeScreenState extends State<ShowtimeScreen> {
   void _navigateToSeatScreen({
     required BuildContext context,
     required Showtime showtime,
-    required Movie movie,
+    required FilmResponse movie,
     required Cinema cinema,
   }) {
     Navigator.push(
