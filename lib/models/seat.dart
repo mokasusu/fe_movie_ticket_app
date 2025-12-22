@@ -15,6 +15,12 @@ class Seat {
     this.isSelected = false,
   });
 
+  factory Seat.fromJson(Map<String, dynamic> json) {
+    return Seat(
+      id: json['maSeatType'],
+    );
+  }
+
   /// Tạo sơ đồ ghế
   static List<List<Seat>> generateSeats({List<String>? bookedIds}) {
     bookedIds ??= [];

@@ -74,4 +74,26 @@ class UserService {
       return false;
     }
   }
+  
+  /// 4. Đổi mật khẩu
+  static Future<bool> changePassword(String currentPassword, String newPassword) async {
+    // try {
+    //   final response = await DioClient.dio.post(
+    //     "$_endpoint/changePassword",
+    //     data: {
+    //       "currentPassword": currentPassword,
+    //       "newPassword": newPassword,
+    //     },
+    //   );
+
+    //   return response.statusCode == 200;
+
+    // } on DioException catch (e) {
+    //   print("❌ Lỗi đổi mật khẩu (Server): ${e.response?.statusCode} - ${e.message}");
+    //   return false;
+    // } catch (e) {
+    //   print("❌ Lỗi không xác định: $e");
+      return false;
+    // }
+  }
 }

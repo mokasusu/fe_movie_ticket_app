@@ -17,7 +17,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   // Controllers
   late TextEditingController _nameController;
   late TextEditingController _phoneController;
-  late TextEditingController _emailController; // Chỉ để hiển thị
+  late TextEditingController _emailController;
   late TextEditingController _addressController;
   late TextEditingController _dobController;
 

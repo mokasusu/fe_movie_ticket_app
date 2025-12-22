@@ -6,9 +6,10 @@ import 'package:home/utils/storage.dart';
 
 // Import màn hình đích
 import '../screens/admin/admin_screen.dart';
-import '../screens/home/home_screen.dart';
+// import '../screens/home/home_screen.dart';
 import '../screens/forgot_password_screen.dart';
 import '../screens/register_screen.dart';
+import '../../widgets/bottomBar/bottom_nav_bar.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -74,13 +75,10 @@ class _LoginScreenState extends State<LoginScreen> {
             // => CHUYỂN ĐẾN TRANG USER
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (_) => const HomeScreen()),
+              MaterialPageRoute(builder: (_) => const BottomNavBar()),
             );
           }
-
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Đăng nhập thành công!"), backgroundColor: Colors.green),
-          );
+        print("✅ Đăng nhập thành công");
         }
       } else {
         // --- XỬ LÝ KHI SAI USER/PASS ---

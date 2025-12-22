@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import '../../theme/colors.dart';
+import '../../screens/userInfomation/profile.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   const CustomAppBar({super.key});
 
   // Hàm xử lý khi nhấn nút Hồ sơ
-  void _handleProfileClick() {
-    print('Nút Hồ sơ đã được nhấn!');
-    // Thêm logic điều hướng/hiển thị dialog tại đây
+  void _handleProfileClick(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const UserProfileScreen()),
+    );
   }
 
   // Hàm xử lý khi nhấn nút Lịch sử Đặt vé
@@ -41,7 +44,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             size: 28.0,
             color: AppColors.gold, // 🎟 accent vàng
           ),
-          onPressed: _handleProfileClick,
+          onPressed: () => _handleProfileClick(context),
           tooltip: 'Hồ sơ người dùng',
         ),
       ),

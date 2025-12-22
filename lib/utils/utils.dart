@@ -9,3 +9,4 @@ bool isSameDate(DateTime a, DateTime b) {
 int TotalSeatPrice(int seatCount, int seatPrice) {
   return seatCount * seatPrice;
 }
+

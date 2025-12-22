@@ -22,4 +22,11 @@ class Food {
       thanhTien: (json['thanhTien'] as num?)?.toDouble(),
     );
   }
+
+  Map<String, dynamic> toJson(int quantitySelected) {
+    return {
+      "foodId": foodId,
+      "soLuong": quantitySelected,
+    };
+  }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../screens/home/home_screen.dart';
 import '../../screens/cinema/cinema_list_screen.dart';
+import '../../screens/voucher/voucher_list_screen.dart';
 import '../../theme/colors.dart';
 
 class BottomNavBar extends StatefulWidget {
@@ -16,6 +17,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
   final List<Widget> pages = [
     HomeScreen(),
     CinemaListScreen(),
+    VoucherListScreen(),
     const Center(child: Text("Notifications")),
     const Center(child: Text("More")),
   ];
@@ -35,32 +37,26 @@ class _BottomNavBarState extends State<BottomNavBar> {
 
         unselectedItemColor: AppColors.textMuted,
 
-        selectedLabelStyle: const TextStyle(
-          fontWeight: FontWeight.w600,
-        ),
-        unselectedLabelStyle: const TextStyle(
-          fontWeight: FontWeight.w400,
-        ),
+        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
+        unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w400),
 
         onTap: (index) => setState(() => _pageIndex = index),
 
         items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: "Home",
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Trang chủ"),
           BottomNavigationBarItem(
             icon: Icon(Icons.location_city_rounded),
-            label: "Cinemas",
+            label: "Rạp",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.card_giftcard),
+            label: "Voucher",
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.notifications),
-            label: "Notify",
+            label: "Thông báo",
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.list),
-            label: "More",
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.list), label: "Khác"),
         ],
       ),
     );

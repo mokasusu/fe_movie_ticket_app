@@ -1,39 +1,58 @@
-import 'package:flutter/widgets.dart';
+enum DiscountType {
+  PERCENTAGE, // Giảm theo %
+  AMOUNT,     // Giảm theo số tiền cố định
+}
 
+// 2. Class Model
 class Voucher {
-  final String MaVoucher; // MaVoucher
-  final String TenVoucher; // TenVoucher
-  final String GiaGiam; // GiaGiam
-  final String MoTa; // MoTa
-  final String NgayTao; // NgayTao
-  final String NgayHet; // NgayHet
-  final int SoLuong; // SoLuong
-  final String TrangThai; // TrangThai
-  final Color backgroundColor;
+  final String maGiamGia;
+  final String moTa;
+  final double giaTriGiam;
+  final DiscountType loaiGiamGia;
+  final DateTime? ngayTao;
+  final DateTime? ngayHetHan;
+  final int soLuong;
+  final bool trangThai;
 
-  const Voucher({
-    required this.MaVoucher,
-    required this.TenVoucher,
-    required this.GiaGiam,
-    required this.MoTa,
-    required this.NgayTao,
-    required this.NgayHet,
-    required this.SoLuong,
-    required this.TrangThai,
-    required this.backgroundColor,
+  Voucher({
+    required this.maGiamGia,
+    required this.moTa,
+    required this.giaTriGiam,
+    required this.loaiGiamGia,
+    this.ngayTao,
+    this.ngayHetHan,
+    required this.soLuong,
+    required this.trangThai,
   });
 
   factory Voucher.fromJson(Map<String, dynamic> json) {
     return Voucher(
-      MaVoucher: json['MaVoucher'],
-      TenVoucher: json['TenVoucher'],
-      GiaGiam: json['GiaGiam'],
-      MoTa: json['MoTa'],
-      NgayTao: json['NgayTao'],
-      NgayHet: json['NgayHet'],
-      SoLuong: json['SoLuong'],
-      TrangThai: json['TrangThai'],
-      backgroundColor: Color(int.parse(json['BackgroundColor'], radix: 16)),
+      maGiamGia: json['maGiamGia'],
+      moTa: json['moTa'],
+      giaTriGiam: (json['giaTriGiam'] as num).toDouble(),
+      loaiGiamGia: json['loaiGiamGia'] == 'PERCENTAGE'
+          ? DiscountType.PERCENTAGE
+          : DiscountType.AMOUNT,
+      ngayTao: json['ngayTao'] != null
+          ? DateTime.tryParse(json['ngayTao'])
+          : null,
+      ngayHetHan: json['ngayHetHan'] != null
+          ? DateTime.tryParse(json['ngayHetHan'])
+          : null,
+      soLuong: json['soLuong'],
+      trangThai: json['trangThai'],
     );
+  }
+  String get displayValue {
+    if (loaiGiamGia == DiscountType.PERCENTAGE) {
+      return "${giaTriGiam.toStringAsFixed(0)}%";
+    } else {
+      return "${giaTriGiam.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')}đ";
+    }
+  }
+
+  bool get isExpired {
+    if (ngayHetHan == null) return false;
+    return DateTime.now().isAfter(ngayHetHan!);
   }
 }

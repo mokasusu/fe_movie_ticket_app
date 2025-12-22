@@ -1,15 +1,14 @@
 import 'package:dio/dio.dart';
-import '../../models/voucher.dart'; // Đảm bảo đúng đường dẫn model
-import '../../api/dio_client.dart';         // Import DioClient chung
+import '../../models/voucher.dart';
+import '../../api/dio_client.dart';
 
 class VoucherService {
-  // BaseUrl của DioClient đã là ".../mobile", chỉ cần thêm endpoint này
+  
   static const String _endpoint = "/vouchers";
 
   static Future<List<Voucher>> fetchVouchers() async {
     try {
       // 1. Gọi API qua DioClient
-      // Tự động parse JSON, tự động timeout, tự động thêm token (nếu có)
       final response = await DioClient.dio.get(_endpoint);
 
       // 2. Xử lý dữ liệu
