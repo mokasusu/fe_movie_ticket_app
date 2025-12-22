@@ -17,25 +17,24 @@ class User {
     required this.anhURL
   });
 
-  factory User.fromJson(Map<String, dynamic> json) {
-    return User(
-      id: json['id'] ?? '',
-      hoTen: json['hoTen'] ?? '',
-      gioiTinh: json['gioiTinh'] ?? '',
-      ngaySinh: json['ngaySinh'] ?? '',
-      email: json['email'] ?? '',
-      matKhau: json['matKhau'] ?? '',
-      anhURL: json['anhURL'] ?? '',
-    );
-  }
-
-  Map<String, dynamic> toJson() => {
-    "id": id,
-    "hoTen": hoTen,
-    "gioiTinh": gioiTinh,
-    "ngaySinh": ngaySinh,
-    "email": email,
-    "matKhau": matKhau,
-    "anhURL": anhURL,
-  };
+ factory User.fromJson(Map<String, dynamic> json) {
+  return User(
+    id: json['maUser'] ?? '',
+    hoTen: json['hoTen'] ?? '',
+    gioiTinh: json['gioiTinh'] ?? '',
+    ngaySinh: json['ngaySinh']?.toString() ?? '',
+    email: json['email'] ?? '',
+    matKhau: json['matKhau'] ?? '',
+    anhURL: json['anhURL'] ?? '',
+  );
+}
+Map<String, dynamic> toJson() => {
+  "maUser": id,
+  "hoTen": hoTen,
+  "gioiTinh": gioiTinh,
+  "ngaySinh": ngaySinh,
+  "email": email,
+  "matKhau": matKhau,
+  "anhURL": anhURL,
+};
 }

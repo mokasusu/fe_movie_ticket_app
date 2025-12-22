@@ -45,9 +45,9 @@ class _SeatScreenState extends State<SeatScreen> {
     bookedSeats = await SeatService.fetchBookedSeats(widget.showtime.id);
 
     // Tạo danh sách Seat objects với trạng thái đã đặt
-    seatObjects = Seat.generateSeats(bookedIds: bookedSeats)
-        .expand((row) => row)
-        .toList();
+    seatObjects = Seat.generateSeats(
+      bookedIds: bookedSeats,
+    ).expand((row) => row).toList();
 
     setState(() => isLoading = false);
   }
@@ -64,22 +64,36 @@ class _SeatScreenState extends State<SeatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final dateStr = DateFormat('dd/MM/yyyy HH:mm').format(widget.showtime.tgBatDau);
+    final dateStr = DateFormat(
+      'dd/MM/yyyy HH:mm',
+    ).format(widget.showtime.tgBatDau);
 
     return Scaffold(
       backgroundColor: AppColors.bgPrimary,
       appBar: SeatAppBar(),
       body: isLoading
-          ? const Center(child: CircularProgressIndicator(color: AppColors.gold))
+          ? const Center(
+              child: CircularProgressIndicator(color: AppColors.gold),
+            )
           : Column(
               children: [
                 Expanded(
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
-
                         // Màn hình
-                        BookingInfoBar(posterUrl: widget.movie.anhPosterNgang, movieTitle: widget.movie.tenPhim, cinemaName: widget.cinema.tenRap, roomName: widget.showtime.tenPhong, time: DateFormat('HH:mm').format(widget.showtime.tgBatDau), date: DateFormat('dd/MM/yyyy').format(widget.showtime.tgBatDau)),
+                        BookingInfoBar(
+                          posterUrl: widget.movie.anhPosterNgang,
+                          movieTitle: widget.movie.tenPhim,
+                          cinemaName: widget.cinema.tenRap,
+                          roomName: widget.showtime.tenPhong,
+                          time: DateFormat(
+                            'HH:mm',
+                          ).format(widget.showtime.tgBatDau),
+                          date: DateFormat(
+                            'dd/MM/yyyy',
+                          ).format(widget.showtime.tgBatDau),
+                        ),
 
                         const SizedBox(height: 16),
 
@@ -96,13 +110,30 @@ class _SeatScreenState extends State<SeatScreen> {
                 ),
 
                 SeatBottomBar(
-                  selectedSeats: seatObjects.where((s) => s.isSelected).toList(),
+                  selectedSeats: seatObjects
+                      .where((s) => s.isSelected)
+                      .toList(),
                   onBookPressed: () {
-                    final selectedSeatIds = seatObjects
+                    final selectedSeatObjs = seatObjects
                         .where((s) => s.isSelected)
+                        .toList();
+                    final selectedSeatIds = selectedSeatObjs
                         .map((s) => s.id)
                         .toList();
-
+                    int totalSeat = 0;
+                    for (var seat in selectedSeatObjs) {
+                      switch (seat.type) {
+                        case SeatType.normal:
+                          totalSeat += 45000;
+                          break;
+                        case SeatType.vip:
+                          totalSeat += 70000;
+                          break;
+                        case SeatType.couple:
+                          totalSeat += 120000;
+                          break;
+                      }
+                    }
                     // Chuyển sang PayScreen
                     Navigator.push(
                       context,
@@ -112,7 +143,7 @@ class _SeatScreenState extends State<SeatScreen> {
                           cinema: widget.cinema,
                           showtime: widget.showtime,
                           seatNumbers: selectedSeatIds,
-                          totalSeat: selectedSeatIds.length,
+                          totalSeat: totalSeat,
                         ),
                       ),
                     );

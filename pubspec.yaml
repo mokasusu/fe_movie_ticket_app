@@ -44,7 +44,7 @@ dependencies:
   barcode_widget: ^2.0.4
   mailer: ^6.1.0
   jwt_decoder: ^2.0.1
-
+  qr_flutter: ^4.1.0
 
 dev_dependencies:
   flutter_test:

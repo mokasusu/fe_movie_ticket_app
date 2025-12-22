@@ -7,11 +7,13 @@ import '../../services/api/voucher_service.dart';
 class VoucherListScreen extends StatefulWidget {
   final bool showBackButton;
   final List<Voucher>? initialVouchers;
+  final Voucher? currentVoucher;
 
   const VoucherListScreen({
     super.key,
     this.initialVouchers,
     this.showBackButton = true,
+    this.currentVoucher,
   });
 
   @override
@@ -19,13 +21,18 @@ class VoucherListScreen extends StatefulWidget {
 }
 
 class _VoucherListScreenState extends State<VoucherListScreen> {
-  // Đã xóa _codeController vì không còn dùng nhập mã
   List<Voucher> _vouchers = [];
   bool _isLoading = true;
+
+  // Biến lưu voucher đang được tick chọn tạm thời
+  Voucher? _tempSelectedVoucher;
 
   @override
   void initState() {
     super.initState();
+    // 1. Khởi tạo voucher đang chọn (nếu có)
+    _tempSelectedVoucher = widget.currentVoucher;
+
     if (widget.initialVouchers != null) {
       _vouchers = widget.initialVouchers!;
       _isLoading = false;
@@ -39,16 +46,30 @@ class _VoucherListScreenState extends State<VoucherListScreen> {
     try {
       _vouchers = await VoucherService.fetchVouchers();
     } catch (e) {
-      _vouchers = []; // Xử lý lỗi an toàn
+      _vouchers = [];
     }
     if (mounted) setState(() => _isLoading = false);
   }
 
-  void _handleSelectVoucher(Voucher voucher) {
-    if (voucher.trangThai != "Hoạt động") return;
-    // Chỉ pop nếu có màn hình trước đó (tránh lỗi khi ở BottomNavBar)
+  // Logic khi bấm vào 1 dòng voucher
+  void _handleItemTap(Voucher voucher) {
+    if (voucher.trangThai != true || voucher.isExpired) return;
+
+    setState(() {
+      // Nếu bấm vào cái đang chọn -> Bỏ chọn
+      // Bấm vào là chọn cái đó
+      if (_tempSelectedVoucher?.maGiamGia == voucher.maGiamGia) {
+        _tempSelectedVoucher = null;
+      } else {
+        _tempSelectedVoucher = voucher;
+      }
+    });
+  }
+
+  // Logic nút Xác nhận
+  void _onConfirm() {
     if (Navigator.canPop(context)) {
-      Navigator.pop(context, voucher);
+      Navigator.pop(context, _tempSelectedVoucher);
     }
   }
 
@@ -61,7 +82,6 @@ class _VoucherListScreenState extends State<VoucherListScreen> {
         .where((v) => v.trangThai == false || v.isExpired)
         .toList();
 
-    // Logic kiểm tra nút Back
     final bool canBack = widget.showBackButton && Navigator.canPop(context);
 
     return DefaultTabController(
@@ -79,8 +99,14 @@ class _VoucherListScreenState extends State<VoucherListScreen> {
           backgroundColor: AppColors.bgPrimary,
           elevation: 0,
           centerTitle: true,
-          // Logic ẩn/hiện nút back
-          leading: canBack ? const BackButton(color: Colors.black) : null,
+          leading: canBack
+              ? IconButton(
+                  icon: const Icon(Icons.arrow_back, color: AppColors.gold),
+                  onPressed: () {
+                    Navigator.maybePop(context);
+                  },
+                )
+              : null,
           bottom: const TabBar(
             labelColor: AppColors.gold,
             unselectedLabelColor: Colors.grey,
@@ -92,36 +118,79 @@ class _VoucherListScreenState extends State<VoucherListScreen> {
             ],
           ),
         ),
-        body: _isLoading
-            ? const Center(
-                child: CircularProgressIndicator(color: AppColors.gold),
-              )
-            : TabBarView(
-                children: [
-                  // Tab 1: Hiện hành (Đã bỏ Input, chỉ còn List)
-                  _buildVoucherList(
-                    data: availableVouchers,
-                    isHistory: false,
-                    onTapItem: _handleSelectVoucher,
-                  ),
+        body: Column(
+          children: [
+            // PHẦN DANH SÁCH
+            Expanded(
+              child: _isLoading
+                  ? const Center(
+                      child: CircularProgressIndicator(color: AppColors.gold),
+                    )
+                  : TabBarView(
+                      children: [
+                        // Tab 1: Hiện hành
+                        _buildVoucherList(
+                          data: availableVouchers,
+                          isHistory: false,
+                        ),
+                        // Tab 2: Lịch sử
+                        _buildVoucherList(
+                          data: historyVouchers,
+                          isHistory: true,
+                        ),
+                      ],
+                    ),
+            ),
 
-                  // Tab 2: Lịch sử
-                  _buildVoucherList(
-                    data: historyVouchers,
-                    isHistory: true,
-                    onTapItem: (v) {}, // Lịch sử không cho chọn
+            // PHẦN NÚT ÁP DỤNG
+            // Chỉ hiện nút này nếu có nút Back (luồng chọn voucher)
+            if (widget.showBackButton)
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: AppColors.bgSecondary,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 10,
+                      offset: const Offset(0, -5),
+                    ),
+                  ],
+                ),
+                child: SafeArea(
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: _onConfirm,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.gold,
+                        foregroundColor: Colors.black, // Màu chữ
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: const Text(
+                        "Áp dụng",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
                   ),
-                ],
+                ),
               ),
+          ],
+        ),
       ),
     );
   }
 
-  // Widget hiển thị danh sách Voucher
   Widget _buildVoucherList({
     required List<Voucher> data,
     required bool isHistory,
-    required Function(Voucher) onTapItem,
   }) {
     if (data.isEmpty) {
       return Center(
@@ -135,9 +204,7 @@ class _VoucherListScreenState extends State<VoucherListScreen> {
             ),
             const SizedBox(height: 12),
             Text(
-              isHistory
-                  ? "Chưa có lịch sử dùng mã"
-                  : "Không có mã giảm giá nào",
+              isHistory ? "Chưa có lịch sử" : "Không có mã giảm giá nào",
               style: TextStyle(color: Colors.grey.shade500),
             ),
           ],
@@ -150,10 +217,15 @@ class _VoucherListScreenState extends State<VoucherListScreen> {
       itemCount: data.length,
       separatorBuilder: (_, __) => const SizedBox(height: 12),
       itemBuilder: (context, index) {
+        final voucher = data[index];
+        // Kiểm tra xem voucher này có đang được chọn không
+        final isSelected = _tempSelectedVoucher?.maGiamGia == voucher.maGiamGia;
+
         return VoucherItemCard(
-          voucher: data[index],
+          voucher: voucher,
           isHistoryMode: isHistory,
-          onTap: () => onTapItem(data[index]),
+          isSelected: isSelected, // Truyền trạng thái selected xuống
+          onTap: () => _handleItemTap(voucher),
         );
       },
     );
@@ -165,12 +237,14 @@ class VoucherItemCard extends StatelessWidget {
   final Voucher voucher;
   final VoidCallback onTap;
   final bool isHistoryMode;
+  final bool isSelected;
 
   const VoucherItemCard({
     super.key,
     required this.voucher,
     required this.onTap,
     this.isHistoryMode = false,
+    this.isSelected = false,
   });
 
   @override
@@ -188,17 +262,20 @@ class VoucherItemCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(10),
       child: Container(
         decoration: BoxDecoration(
-          color: isHistoryMode ? AppColors.bgElevated : AppColors.red,
+          color: isHistoryMode ? AppColors.bgElevated : Colors.blueGrey,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-            color: isActive ? AppColors.red : AppColors.disabled,
-            width: 1.5,
+            // Logic viền: Nếu đang chọn -> Vàng đậm, Nếu không -> Xám/Đỏ nhạt
+            color: isSelected
+                ? AppColors.gold
+                : (isActive ? AppColors.gold : AppColors.disabled),
+            width: isSelected ? 2 : 1, // Viền dày hơn nếu chọn
           ),
           boxShadow: [
             if (isActive)
               BoxShadow(
-                color: AppColors.gold.withOpacity(0.08),
-                blurRadius: 8,
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 4,
                 offset: const Offset(0, 2),
               ),
           ],
@@ -210,7 +287,10 @@ class VoucherItemCard extends StatelessWidget {
               width: 90,
               height: 100,
               decoration: BoxDecoration(
-                color: isActive ? AppColors.gold : AppColors.disabled,
+                // Logic màu nền cuống vé: Nếu chọn -> Vàng, Nếu không -> Đỏ/Xám
+                color: isActive
+                    ? (isSelected ? AppColors.gold : AppColors.red)
+                    : AppColors.disabled,
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(10),
                   bottomLeft: Radius.circular(10),
@@ -219,21 +299,27 @@ class VoucherItemCard extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.card_giftcard, color: Colors.white, size: 28),
+                  Icon(
+                    isSelected ? Icons.check_circle : Icons.card_giftcard,
+                    color: Colors.white,
+                    size: 28,
+                  ),
                   const SizedBox(height: 4),
                   Text(
-                    isHistoryMode ? "HẾT HẠN" : "VOUCHER",
+                    isHistoryMode
+                        ? "HẾT HẠN"
+                        : (isSelected ? "ĐÃ CHỌN" : "VOUCHER"),
                     style: const TextStyle(
                       color: Colors.white,
-                      fontSize: 11,
+                      fontSize: 10,
                       fontWeight: FontWeight.bold,
-                      letterSpacing: 1.2,
                     ),
                     textAlign: TextAlign.center,
                   ),
                 ],
               ),
             ),
+
             // Phần phải (Thông tin)
             Expanded(
               child: Padding(
@@ -241,26 +327,44 @@ class VoucherItemCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      voucher.maGiamGia,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                        decoration: isHistoryMode
-                            ? TextDecoration.lineThrough
-                            : null,
-                        color: isHistoryMode
-                            ? AppColors.textMuted
-                            : AppColors.textPrimary,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            voucher.maGiamGia,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              decoration: isHistoryMode
+                                  ? TextDecoration.lineThrough
+                                  : null,
+                              color: isHistoryMode
+                                  ? AppColors.textMuted
+                                  : AppColors.textPrimary,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        // Radio Button hiển thị trạng thái chọn
+                        if (!isHistoryMode)
+                          Icon(
+                            isSelected
+                                ? Icons.radio_button_checked
+                                : Icons.radio_button_off,
+                            color: isSelected
+                                ? AppColors.gold
+                                : Colors.grey.shade400,
+                            size: 20,
+                          ),
+                      ],
                     ),
                     const SizedBox(height: 4),
                     Text(
                       "Giảm: ${numberFormat.format(voucher.giaTriGiam)}",
                       style: TextStyle(
-                        color: AppColors.gold,
+                        color: isActive ? AppColors.gold : AppColors.textMuted,
                         fontWeight: FontWeight.bold,
                         fontSize: 14,
                       ),
@@ -282,28 +386,6 @@ class VoucherItemCard extends StatelessWidget {
                             fontSize: 12,
                             fontStyle: FontStyle.italic,
                             color: AppColors.textMuted,
-                          ),
-                        ),
-                      )
-                    else
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppColors.gold.withOpacity(0.15),
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: const Text(
-                            "Chọn dùng",
-                            style: TextStyle(
-                              color: AppColors.gold,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 12,
-                            ),
                           ),
                         ),
                       ),

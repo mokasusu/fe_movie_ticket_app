@@ -17,7 +17,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
   final List<Widget> pages = [
     HomeScreen(),
     CinemaListScreen(),
-    VoucherListScreen(),
+    const VoucherListScreen(showBackButton: false),
     const Center(child: Text("Notifications")),
     const Center(child: Text("More")),
   ];

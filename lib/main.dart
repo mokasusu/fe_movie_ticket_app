@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'screens/intro_screen.dart';
+import 'package:home/screens/login_screen.dart';
+import 'widgets/bottomBar/bottom_nav_bar.dart';
+import 'utils/global_keys.dart';
 
 void main() {
   runApp(const MovieApp());
@@ -16,7 +18,15 @@ class MovieApp extends StatelessWidget {
       theme: ThemeData.dark().copyWith(
         scaffoldBackgroundColor: Colors.black,
       ),
-      home: const IntroScreen(),
+      // 3. Gán navigatorKey để DioClient có thể gọi chuyển màn hình từ bất cứ đâu
+      navigatorKey: AppGlobalKeys.navigatorKey,
+      
+      // 4. Định nghĩa route '/login' để DioClient gọi pushNamed('/login')
+      routes: {
+        '/login': (context) => const BottomNavBar(),
+      },
+
+      home: const LoginScreen(),
     );
   }
 }

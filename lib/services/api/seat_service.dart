@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import '../../api/dio_client.dart';
 
 class SeatService {

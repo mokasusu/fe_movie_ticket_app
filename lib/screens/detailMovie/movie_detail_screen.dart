@@ -37,9 +37,9 @@ class MovieDetailPage extends StatelessWidget {
                       width: double.infinity,
                       decoration: BoxDecoration(
                         color: AppColors.bgSecondary,
-                        image: _isValidUrl(movie.anhPosterNgang)
+                        image: _isValidUrl(movie.anhPosterDoc)
                             ? DecorationImage(
-                                image: NetworkImage(movie.anhPosterNgang),
+                                image: NetworkImage(movie.anhPosterDoc),
                                 fit: BoxFit.cover,
                                 colorFilter: ColorFilter.mode(
                                   Colors.black.withOpacity(0.45),
@@ -48,7 +48,7 @@ class MovieDetailPage extends StatelessWidget {
                               )
                             : null,
                       ),
-                      child: !_isValidUrl(movie.anhPosterNgang)
+                      child: !_isValidUrl(movie.anhPosterDoc)
                           ? const Center(
                               child: Icon(
                                 Icons.movie,
