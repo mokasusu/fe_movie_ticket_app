@@ -1,47 +1,59 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:dio/dio.dart';
+import '../../api/dio_client.dart'; // Import DioClient
+import '../../utils/storage.dart';    // Import file Storage chung
 
 class AuthService {
-  static const String baseUrl = "http://10.0.2.2:6969/mobile/auth/token";
+  static const String _loginPath = "/auth/token";
 
-  static final storage = FlutterSecureStorage();
-
+  /// Hàm Đăng nhập
   static Future<bool> login(String email, String password) async {
     try {
-      final response = await http.post(
-        Uri.parse(baseUrl),
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: jsonEncode({
+      // 1. Gọi API qua Dio (Code gọn hơn http rất nhiều)
+      final response = await DioClient.dio.post(
+        _loginPath,
+        data: {
           "email": email,
-          "matKhau": password,
-        }),
+          "matKhau": password
+        },
       );
 
+      // 2. Xử lý kết quả
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
+        final data = response.data; // Dio tự động parse JSON
 
         if (data["authenticated"] == true) {
-          // Lưu token lại để gọi API sau này
-          await storage.write(key: "token", value: data["token"]);
-          print("TOKEN ĐÃ LƯU: ${data["token"]}");
+          String token = data["token"];
+          
+          // QUAN TRỌNG: Dùng class Storage chung để đảm bảo Key luôn đúng ('auth_token')
+          await Storage.saveToken(token);
+          
+          print("✅ Đăng nhập thành công. Token đã lưu.");
           return true;
-        } else {
-          return false;
         }
-      } else {
-        return false;
       }
+      
+      print("⚠️ Đăng nhập thất bại: ${response.data}");
+      return false;
+
+    } on DioException catch (e) {
+      // Xử lý lỗi kết nối, sai pass (nếu server trả về 400/401)
+      print("❌ Lỗi API Login: ${e.response?.statusCode} - ${e.message}");
+      return false;
     } catch (e) {
-      print("Lỗi đăng nhập: $e");
+      print("❌ Lỗi không xác định: $e");
       return false;
     }
   }
   
-  // Lấy token đã lưu 
-  static Future<String?> getToken() async {
-    return await storage.read(key: "token");
+  /// Hàm Đăng xuất
+  static Future<void> logout() async {
+    await Storage.deleteToken();
+    print("👋 Đã đăng xuất");
+  }
+
+  /// Kiểm tra xem user đã đăng nhập chưa (Dùng cho Splash Screen)
+  static Future<bool> isLoggedIn() async {
+    final token = await Storage.getToken();
+    return token != null && token.isNotEmpty;
   }
 }

@@ -1,61 +1,39 @@
+import 'package:dio/dio.dart';
 import '../../models/showtime.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import '../../api/dio_client.dart';
 
 class ShowtimeService {
-  static const String baseUrl = "http://10.0.2.2:6969/mobile/showtimes";
 
-  static final FlutterSecureStorage storage = FlutterSecureStorage();
+  static const String _endpoint = "/showtimes";
 
-  /// Lấy token từ secure storage
-  static Future<String?> _getToken() async {
-    return await storage.read(key: 'token');
-  }
-
-  /// Tạo header với token
-  static Future<Map<String, String>> _headers() async {
-    final token = await _getToken();
-    return {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token',
-    };
-  }
-
-  /// Lấy suất chiếu theo rạp
-  static Future<List<Showtime>> fetchByCinema(int cinemaId) async {
+  static Future<List<Showtime>> searchShowtimes({
+    String? maPhim,
+    int? maRap,
+  }) async {
     try {
-      final response = await http.get(
-        Uri.parse('$baseUrl/cinema/$cinemaId'),
-        headers: await _headers(),
+      // 1. Gọi API qua Dio
+      final response = await DioClient.dio.get(
+        "$_endpoint/search",
+        queryParameters: {
+          if (maPhim != null) 'maPhim': maPhim,
+          if (maRap != null) 'maRap': maRap,
+        },
       );
+
+      // 2. Xử lý dữ liệu
       if (response.statusCode == 200) {
-        final List<dynamic> data = jsonDecode(response.body);
-        return data.map((json) => Showtime.fromJson(json)).toList();
+        // Dio tự động parse JSON
+        final List<dynamic> data = response.data;
+        return data.map((e) => Showtime.fromJson(e)).toList();
       } else {
         throw Exception('Lỗi tải suất chiếu: ${response.statusCode}');
       }
-    } catch (e) {
-      print("Lỗi khi gọi API: $e");
+    } on DioException catch (e) {
+      // 3. Xử lý lỗi
+      print('❌ Lỗi ShowtimeService: ${e.response?.statusCode} - ${e.message}');
       return [];
-    }
-  }
-
-  /// Lấy suất chiếu theo phim
-  static Future<List<Showtime>> fetchByMovie(String movieId) async {
-    try {
-      final response = await http.get(
-        Uri.parse('$baseUrl/film/$movieId'),
-        headers: await _headers(),
-      );
-      if (response.statusCode == 200) {
-        final List<dynamic> data = jsonDecode(response.body);
-        return data.map((json) => Showtime.fromJson(json)).toList();
-      } else {
-        throw Exception('Lỗi tải suất chiếu: ${response.statusCode}');
-      }
     } catch (e) {
-      print("Lỗi khi gọi API: $e");
+      print('❌ Lỗi không xác định: $e');
       return [];
     }
   }

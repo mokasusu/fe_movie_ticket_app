@@ -18,13 +18,30 @@ class ComingSoonSlider extends StatelessWidget {
         // 🎬 Tiêu đề section
         const Padding(
           padding: EdgeInsets.fromLTRB(16.0, 24.0, 16.0, 16.0),
-          child: Text(
-            'Phim Sắp Chiếu',
-            style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary, // chữ trắng điện ảnh
-            ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // Đoạn thẳng vàng dọc
+              SizedBox(
+                width: 5,
+                height: 32,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: AppColors.gold,
+                    borderRadius: BorderRadius.all(Radius.circular(2)),
+                  ),
+                ),
+              ),
+              SizedBox(width: 10),
+              Text(
+                'Phim Sắp Chiếu',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary, // chữ trắng điện ảnh
+                ),
+              ),
+            ],
           ),
         ),
 
@@ -97,7 +114,9 @@ class ComingSoonSlider extends StatelessWidget {
                           borderRadius: BorderRadius.circular(12.0),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.6), // bóng đổ đậm hơn cho dark UI
+                              color: Colors.black.withOpacity(
+                                0.6,
+                              ), // bóng đổ đậm hơn cho dark UI
                               blurRadius: 10,
                               offset: const Offset(0, 4),
                             ),
@@ -132,7 +151,8 @@ class ComingSoonSlider extends StatelessWidget {
                                     ),
                                   ),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       Text(

@@ -2,17 +2,49 @@ import 'package:flutter/material.dart';
 import '../../models/cinema.dart';
 import '../../models/movie.dart';
 import '../../services/api/cinema_service.dart';
-import '../../services/api/showtime_service.dart';
 import '../showtime/showtime_screen.dart';
 import '../../theme/colors.dart';
 
+// thanh tìm kiếm
+class CinemaSearchBar extends StatelessWidget {
+  final TextEditingController controller;
+  final ValueChanged<String> onChanged;
+
+  const CinemaSearchBar({
+    super.key,
+    required this.controller,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: TextField(
+        controller: controller,
+        onChanged: onChanged,
+        style: const TextStyle(color: AppColors.textPrimary),
+        decoration: InputDecoration(
+          hintText: "Tìm tên rạp...",
+          hintStyle: const TextStyle(color: AppColors.textMuted),
+          prefixIcon: const Icon(Icons.search, color: AppColors.textMuted),
+          filled: true,
+          fillColor: AppColors.bgSecondary,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ===== CINEMA LIST SCREEN =====
 class CinemaListScreen extends StatefulWidget {
   final Movie? selectedMovie;
 
-  const CinemaListScreen({
-    super.key,
-    this.selectedMovie,
-  });
+  const CinemaListScreen({super.key, this.selectedMovie});
 
   @override
   State<CinemaListScreen> createState() => _CinemaListScreenState();
@@ -20,9 +52,8 @@ class CinemaListScreen extends StatefulWidget {
 
 class _CinemaListScreenState extends State<CinemaListScreen> {
   final TextEditingController _searchController = TextEditingController();
-
-  List<Cinema> _baseCinemas = [];
-  List<Cinema> _displayCinemas = [];
+  final ValueNotifier<List<Cinema>> _filteredCinemas = ValueNotifier([]);
+  List<Cinema> _allCinemas = [];
   bool _isLoading = true;
 
   @override
@@ -35,31 +66,22 @@ class _CinemaListScreenState extends State<CinemaListScreen> {
   @override
   void dispose() {
     _searchController.dispose();
+    _filteredCinemas.dispose();
     super.dispose();
   }
 
   Future<void> _loadCinemasFromApi() async {
     setState(() => _isLoading = true);
-
     try {
       final cinemas = await CinemaService.fetchCinemas();
-      List<Cinema> filtered = cinemas;
-
-      if (widget.selectedMovie != null) {
-        final showtimes =
-            await ShowtimeService.fetchByMovie(widget.selectedMovie!.maPhim);
-        final cinemaIds = showtimes.map((s) => s.maRap).toSet();
-        filtered = cinemas.where((c) => cinemaIds.contains(c.maRap)).toList();
-      }
-
       if (!mounted) return;
 
-      setState(() {
-        _baseCinemas = filtered;
-        _displayCinemas = filtered;
-        _isLoading = false;
-      });
-    } catch (_) {
+      _allCinemas = cinemas;
+      _filteredCinemas.value = cinemas;
+
+      setState(() => _isLoading = false);
+    } catch (e) {
+      debugPrint('❌ Lỗi load rạp: $e');
       if (!mounted) return;
       setState(() => _isLoading = false);
     }
@@ -67,66 +89,47 @@ class _CinemaListScreenState extends State<CinemaListScreen> {
 
   void _onSearchChanged() {
     final query = _searchController.text.toLowerCase();
-    setState(() {
-      _displayCinemas = _baseCinemas
-          .where((c) => c.tenRap.toLowerCase().contains(query))
-          .toList();
-    });
+    final filtered = _allCinemas
+        .where((c) => c.tenRap.toLowerCase().contains(query))
+        .toList();
+    _filteredCinemas.value = filtered;
   }
 
   @override
   Widget build(BuildContext context) {
-    final title =
-        widget.selectedMovie != null ? "Chọn rạp" : "Danh sách rạp";
-
-    final subTitle =
-        widget.selectedMovie?.tenPhim ?? "Chọn rạp bạn muốn đến";
-
     return Scaffold(
       backgroundColor: AppColors.bgPrimary,
-
       appBar: AppBar(
         backgroundColor: AppColors.bgSecondary,
         iconTheme: const IconThemeData(color: AppColors.textPrimary),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title,
-                style: const TextStyle(
-                    color: AppColors.textPrimary, fontSize: 18)),
             Text(
-              subTitle,
+              widget.selectedMovie != null ? 'Chọn rạp' : 'Danh sách rạp',
               style: const TextStyle(
-                  color: AppColors.textSecondary, fontSize: 12),
+                color: AppColors.textPrimary,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
             ),
+            if (widget.selectedMovie != null)
+              Text(
+                widget.selectedMovie!.tenPhim,
+                style: const TextStyle(
+                  color: AppColors.textSecondary,
+                  fontSize: 12,
+                ),
+              ),
           ],
         ),
       ),
-
       body: Column(
         children: [
-          // SEARCH
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: TextField(
-              controller: _searchController,
-              style: const TextStyle(color: AppColors.textPrimary),
-              decoration: InputDecoration(
-                hintText: "Tìm tên rạp...",
-                hintStyle:
-                    const TextStyle(color: AppColors.textMuted),
-                prefixIcon:
-                    const Icon(Icons.search, color: AppColors.textMuted),
-                filled: true,
-                fillColor: AppColors.bgSecondary,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
-                ),
-              ),
-            ),
+          CinemaSearchBar(
+            controller: _searchController,
+            onChanged: (v) => _onSearchChanged(),
           ),
-
           Expanded(
             child: _isLoading
                 ? const Center(
@@ -134,69 +137,78 @@ class _CinemaListScreenState extends State<CinemaListScreen> {
                       color: AppColors.gold,
                     ),
                   )
-                : _displayCinemas.isEmpty
-                    ? const Center(
-                        child: Text(
-                          "Không có rạp nào",
-                          style: TextStyle(
-                              color: AppColors.textMuted, fontSize: 16),
-                        ),
-                      )
-                    : ListView.separated(
-                        itemCount: _displayCinemas.length,
-                        separatorBuilder: (_, __) => const Divider(
-                          height: 1,
-                          color: AppColors.disabled,
-                        ),
+                : ValueListenableBuilder<List<Cinema>>(
+                    valueListenable: _filteredCinemas,
+                    builder: (context, cinemas, _) {
+                      if (cinemas.isEmpty) {
+                        return const Center(
+                          child: Text(
+                            'Không có rạp nào',
+                            style: TextStyle(color: AppColors.textMuted),
+                          ),
+                        );
+                      }
+                      return ListView.separated(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 8),
+                        itemCount: cinemas.length,
+                        separatorBuilder: (_, __) =>
+                            const SizedBox(height: 6),
                         itemBuilder: (context, index) {
-                          final cinema = _displayCinemas[index];
-
-                          return ListTile(
-                            leading: Container(
-                              width: 40,
-                              height: 40,
-                              decoration: BoxDecoration(
-                                color: AppColors.gold.withOpacity(0.15),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: const Icon(
-                                Icons.theater_comedy,
-                                color: AppColors.gold,
-                              ),
+                          final cinema = cinemas[index];
+                          return Card(
+                            color: AppColors.bgSecondary,
+                            elevation: 2,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
                             ),
-                            title: Text(
-                              cinema.tenRap,
-                              style: const TextStyle(
-                                color: AppColors.textPrimary,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            subtitle: Text(
-                              cinema.diaDiem,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                  color: AppColors.textSecondary),
-                            ),
-                            trailing: const Icon(
-                              Icons.arrow_forward_ios,
-                              size: 14,
-                              color: AppColors.textMuted,
-                            ),
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => ShowtimeScreen(
-                                    cinemaId: cinema.maRap,
-                                    selectedMovie: widget.selectedMovie,
-                                  ),
+                            child: ListTile(
+                              contentPadding:
+                                  const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                              leading: Container(
+                                width: 36,
+                                height: 36,
+                                decoration: BoxDecoration(
+                                  color: AppColors.gold.withOpacity(0.15),
+                                  borderRadius: BorderRadius.circular(8),
                                 ),
-                              );
-                            },
+                                child: const Icon(
+                                  Icons.location_on,
+                                  color: AppColors.gold,
+                                ),
+                              ),
+                              title: Text(
+                                cinema.tenRap,
+                                style: const TextStyle(
+                                    color: AppColors.textPrimary,
+                                    fontWeight: FontWeight.w600),
+                              ),
+                              subtitle: Text(
+                                cinema.diaDiem,
+                                style: const TextStyle(
+                                    color: AppColors.textSecondary),
+                              ),
+                              trailing: const Icon(
+                                Icons.chevron_right,
+                                color: AppColors.textMuted,
+                              ),
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => ShowtimeScreen(
+                                      selectedCinema: cinema,
+                                      selectedMovie: widget.selectedMovie,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
                           );
                         },
-                      ),
+                      );
+                    },
+                  ),
           ),
         ],
       ),

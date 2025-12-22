@@ -1,52 +1,57 @@
+import 'package:dio/dio.dart';
 import '../../models/user.dart';
-import '../auth/auth_service.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+import '../../api/dio_client.dart';
 
 class UserService {
-  static const String baseUrl = "http://10.0.2.2:6969/mobile/users";
+  // Đường dẫn gốc: .../mobile/users
+  static const String _userEndpoint = "/users";
 
-  // Đăng ký người dùng mới
+  /// 1. Đăng ký (Khớp với @PostMapping)
   static Future<bool> registerUser(Map<String, dynamic> userData) async {
     try {
-      final response = await http.post(
-        Uri.parse(baseUrl),
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: jsonEncode(userData),
+      final response = await DioClient.dio.post(
+        _userEndpoint,
+        data: userData,
       );
-
       return response.statusCode == 200 || response.statusCode == 201;
     } catch (e) {
-      print("Lỗi khi gọi API: $e");
+      print("❌ Lỗi Đăng ký: $e");
       return false;
     }
   }
 
-  // Lấy thông tin người dùng băng token
-  static Future<User?> getMyinfo() async {
+  /// 2. Lấy thông tin cá nhân (Khớp với @GetMapping("/myInfo"))
+  static Future<User?> getMyInfo() async {
     try {
-      final token = await AuthService.getToken();
 
-      final response = await http.get(
-        Uri.parse('$baseUrl/myinfo'),
-        headers: {
-          "content-type": "application/json",
-          "Authorization": "Bearer $token",
-        },
-      );
+      final response = await DioClient.dio.get("$_userEndpoint/myInfo");
 
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        return User.fromJson(data);
-      } else {
-        throw Exception('Lỗi tải thông tin người dùng: ${response.statusCode}');
+        return User.fromJson(response.data);
       }
-    }
-    catch (e) {
-      print("Lỗi khi gọi API: $e");
       return null;
+    } catch (e) {
+      print("❌ Lỗi lấy Info: $e");
+      return null;
+    }
+  }
+
+  /// 3. Cập nhật thông tin người dùng (Khớp với @PutMapping("/{userId}"))
+  static Future<bool> updateUser(String userId, Map<String, dynamic> updateData) async {
+    try {
+      // Gọi PUT /users/{userId}
+      final response = await DioClient.dio.put(
+        "$_userEndpoint/$userId",
+        data: updateData, // Body là UserUpdateRequest
+      );
+
+      return response.statusCode == 200;
+    } on DioException catch (e) {
+      print("❌ Lỗi cập nhật: ${e.response?.statusCode} - ${e.message}");
+      return false;
+    } catch (e) {
+      print("❌ Lỗi không xác định: $e");
+      return false;
     }
   }
 }

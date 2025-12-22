@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../services/auth/auth_service.dart';
 import '../register/register_screen.dart';
-import '../../widgets/bottomNavBar/bottom_nav_bar.dart';
+import '../../widgets/bottomBar/bottom_nav_bar.dart';
 import 'dart:async';
 
 class LoginScreen extends StatefulWidget {

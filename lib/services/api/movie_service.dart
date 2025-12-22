@@ -1,77 +1,57 @@
-import '../../models/movie.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:dio/dio.dart';
+import '../../models/movie.dart'; // Đảm bảo đường dẫn import đúng model của bạn
+import '../../api/dio_client.dart'; // Import DioClient bạn đã tạo
 
 class MovieService {
-  static const String baseUrl = "http://10.0.2.2:6969/mobile/films";
-  static final _storage = FlutterSecureStorage();
+  // Đường dẫn gốc cho phim (DioClient đã có base là .../mobile)
+  static const String _movieEndpoint = "/films";
 
-  /// Lấy token từ secure storage
-  static Future<String?> _getToken() async {
-    return await _storage.read(key: "token");
-  }
+  /// Hàm chung để gọi API và parse dữ liệu
+  static Future<List<Movie>> _fetchData(String path) async {
+    try {
+      // 1. Gọi API qua DioClient
+      // Không cần truyền header Authorization thủ công nữa vì AuthInterceptor đã tự làm việc đó.
+      final response = await DioClient.dio.get(path);
 
-  /// Hàm gọi API GET kèm Token
-  static Future<http.Response> _getWithToken(String url) async {
-    final token = await _getToken();
-    print("lay Token: $token");
-
-    if (token == null) {
-      throw Exception("Token null! Người dùng chưa đăng nhập.");
-    }
-
-    return await http.get(
-      Uri.parse(url),
-      headers: {
-        "Authorization": "Bearer $token",
-        "Content-Type": "application/json"
+      print("🔍 API ($path) trả về: ${response.data}");
+      print("🔍 Kiểu dữ liệu: ${response.data.runtimeType}");
+      // 2. Xử lý dữ liệu
+      if (response.statusCode == 200) {
+        // Dio tự động convert JSON sang Map/List, không cần jsonDecode(response.body)
+        final List<dynamic> data = response.data;
+        return data.map((json) => Movie.fromJson(json)).toList();
+      } else {
+        throw Exception("Lỗi tải dữ liệu: ${response.statusCode}");
       }
-    );
+    } on DioException catch (e) {
+      // 3. Xử lý lỗi từ Dio
+      print("❌ Lỗi API ($path): ${e.response?.statusCode} - ${e.message}");
+      return [];
+    } catch (e) {
+      print("❌ Lỗi không xác định: $e");
+      return [];
+    }
   }
+
+  // --- Các hàm Public ---
 
   /// Lấy tất cả phim
   static Future<List<Movie>> fetchAllMovies() async {
-    try {
-      final response = await _getWithToken(baseUrl);
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body) as List<dynamic>;
-        return data.map((json) => Movie.fromJson(json)).toList();
-      } else {
-        throw Exception("Lỗi tải phim: ${response.statusCode}");
-      }
-    } catch (e) {
-      print("Lỗi khi gọi API: $e");
-      return [];
-    }
-  }
-
-  /// Hàm gọi API chung kèm token
-  static Future<List<Movie>> _fetchMovies(String endpoint) async {
-    try {
-      final response = await _getWithToken("$baseUrl/$endpoint");
-
-      if (response.statusCode == 200) {
-        final List<dynamic> data = jsonDecode(response.body);
-        return data.map((json) => Movie.fromJson(json)).toList();
-      } else {
-        throw Exception("Lỗi tải phim: ${response.statusCode}");
-      }
-    } catch (e) {
-      print("Lỗi khi gọi API: $e");
-      return [];
-    }
+    return await _fetchData(_movieEndpoint);
   }
 
   /// Phim đang chiếu
-  static Future<List<Movie>> fetchMoviesNowShowing() =>
-      _fetchMovies("now-showing");
+  static Future<List<Movie>> fetchMoviesNowShowing() async {
+    return await _fetchData("$_movieEndpoint/now-showing");
+  }
 
   /// Phim sắp chiếu
-  static Future<List<Movie>> fetchMoviesComingSoon() =>
-      _fetchMovies("upcoming");
+  static Future<List<Movie>> fetchMoviesComingSoon() async {
+    return await _fetchData("$_movieEndpoint/upcoming");
+  }
+
   /// Phim hot
-  static Future<List<Movie>> fetchHotMovies() =>
-      _fetchMovies("hot");
+  static Future<List<Movie>> fetchHotMovies() async {
+    return await _fetchData("$_movieEndpoint/hot");
+  }
 }

@@ -60,24 +60,21 @@ class _MovieCardState extends State<MovieCard> {
   void _openMovieDetail(Movie movie) {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => MovieDetailPage(movie: movie),
-      ),
+      MaterialPageRoute(builder: (_) => MovieDetailPage(movie: movie)),
     );
   }
 
   void _openCinemaScreen(Movie movie) {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => CinemaListScreen(selectedMovie: movie),
-      ),
+      MaterialPageRoute(builder: (_) => CinemaListScreen(selectedMovie: movie)),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final bodyHeight = MediaQuery.of(context).size.height -
+    final bodyHeight =
+        MediaQuery.of(context).size.height -
         kToolbarHeight -
         MediaQuery.of(context).padding.top;
 
@@ -104,13 +101,30 @@ class _MovieCardState extends State<MovieCard> {
           padding: EdgeInsets.fromLTRB(16, 8, 16, 0),
           child: Align(
             alignment: Alignment.centerLeft,
-            child: Text(
-              'Phim đang chiếu',
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
-              ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // Đoạn thẳng vàng dọc
+                SizedBox(
+                  width: 5,
+                  height: 32,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: AppColors.gold,
+                      borderRadius: BorderRadius.all(Radius.circular(2)),
+                    ),
+                  ),
+                ),
+                SizedBox(width: 10),
+                Text(
+                  'Phim đang chiếu',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+              ],
             ),
           ),
         ),
@@ -157,13 +171,19 @@ class _MovieCardState extends State<MovieCard> {
                             child: Stack(
                               fit: StackFit.expand,
                               children: [
-                                Image.network(movie.anhPosterDoc, fit: BoxFit.cover),
+                                Image.network(
+                                  movie.anhPosterDoc,
+                                  fit: BoxFit.cover,
+                                ),
 
                                 Positioned(
                                   top: 10,
                                   right: 10,
                                   child: Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 4,
+                                    ),
                                     decoration: BoxDecoration(
                                       color: AppColors.red,
                                       borderRadius: BorderRadius.circular(6),
@@ -195,7 +215,8 @@ class _MovieCardState extends State<MovieCard> {
                                       ),
                                     ),
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           movie.tenPhim,
@@ -217,12 +238,16 @@ class _MovieCardState extends State<MovieCard> {
                                         const SizedBox(height: 12),
                                         Center(
                                           child: ElevatedButton.icon(
-                                            onPressed: () => _openCinemaScreen(movie),
-                                            icon: const Icon(Icons.confirmation_number),
+                                            onPressed: () =>
+                                                _openCinemaScreen(movie),
+                                            icon: const Icon(
+                                              Icons.confirmation_number,
+                                            ),
                                             label: const Text("ĐẶT VÉ NGAY"),
                                             style: ElevatedButton.styleFrom(
                                               backgroundColor: AppColors.gold,
-                                              foregroundColor: AppColors.bgPrimary,
+                                              foregroundColor:
+                                                  AppColors.bgPrimary,
                                             ),
                                           ),
                                         ),

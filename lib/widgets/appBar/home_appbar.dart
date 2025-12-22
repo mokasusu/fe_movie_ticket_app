@@ -47,26 +47,19 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       ),
 
       // 2️⃣ Ở giữa – Logo / biểu tượng app
-      title: const Row(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Icon(
-            Icons.movie,
-            color: AppColors.gold, // 🎬 biểu tượng điện ảnh
-            size: 28.0,
-          ),
-          SizedBox(width: 8.0),
-        ],
+      title: Center(
+        child: Image.asset(
+          'assets/images/cinemode.png',
+          height: 26.0,
+          fit: BoxFit.contain,
+        ),
       ),
       centerTitle: true,
 
       // 3️⃣ Bên phải – Lịch sử đặt vé
       actions: <Widget>[
         IconButton(
-          icon: const Icon(
-            Icons.confirmation_num,
-            color: AppColors.gold,
-          ),
+          icon: const Icon(Icons.confirmation_num, color: AppColors.gold),
           onPressed: _handleHistoryClick,
           tooltip: 'Lịch sử Đặt vé',
         ),

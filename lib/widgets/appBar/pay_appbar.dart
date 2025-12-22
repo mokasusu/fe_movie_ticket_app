@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../theme/colors.dart';
 
-class SeatAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const SeatAppBar({super.key});
+class PayAppBar extends StatelessWidget implements PreferredSizeWidget {
+  const PayAppBar({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +16,7 @@ class SeatAppBar extends StatelessWidget implements PreferredSizeWidget {
       ),
 
       title: const Text(
-        'Chọn ghế',
+        'Thanh toán',
         style: TextStyle(
           fontWeight: FontWeight.bold,
           fontSize: 20,

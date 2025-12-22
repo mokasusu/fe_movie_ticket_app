@@ -29,13 +29,10 @@ class _BottomNavBarState extends State<BottomNavBar> {
         currentIndex: _pageIndex,
         type: BottomNavigationBarType.fixed,
 
-        // 🎬 Nền tối điện ảnh
         backgroundColor: AppColors.bgSecondary,
 
-        // 🎟 Tab đang chọn – vàng điện ảnh
         selectedItemColor: AppColors.gold,
 
-        // Tab chưa chọn – chữ/màu mờ
         unselectedItemColor: AppColors.textMuted,
 
         selectedLabelStyle: const TextStyle(

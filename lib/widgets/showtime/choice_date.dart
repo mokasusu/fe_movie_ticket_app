@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../theme/colors.dart';
 
 const List<String> _WEEKDAYS_SHORT = ["CN", "T2", "T3", "T4", "T5", "T6", "T7"];
 
@@ -33,7 +34,7 @@ class _MovieDatePickerState extends State<MovieDatePicker> {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16),
-      color: Colors.black,
+      color: AppColors.bgSecondary,
       height: 90, // Chiều cao cố định cho khu vực chọn ngày
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
@@ -60,11 +61,11 @@ class _MovieDatePickerState extends State<MovieDatePicker> {
               width: 54,
               decoration: BoxDecoration(
                 color: isSelected
-                    ? Colors.redAccent.shade700
-                    : const Color(0xFF1A1A1A),
+                    ? AppColors.red
+                    : Colors.grey.shade800,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: isSelected ? Colors.redAccent : Colors.grey.shade800,
+                  color: isSelected ? AppColors.red : Colors.grey.shade800,
                   width: isSelected ? 2 : 1,
                 ),
               ),
@@ -74,17 +75,17 @@ class _MovieDatePickerState extends State<MovieDatePicker> {
                   Text(
                     _WEEKDAYS_SHORT[date.weekday == 7 ? 0 : date.weekday],
                     style: TextStyle(
-                      color: isSelected ? Colors.white : Colors.white54,
+                      color: isSelected ? AppColors.gold: AppColors.textPrimary,
                       fontWeight: FontWeight.bold,
-                      fontSize: 14,
+                      fontSize: 16,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     "${date.day}/${date.month}",
                     style: TextStyle(
-                      color: isSelected ? Colors.white : Colors.white54,
-                      fontSize: 12,
+                      color: isSelected ? AppColors.gold : AppColors.textPrimary,
+                      fontSize: 14,
                     ),
                   ),
                 ],

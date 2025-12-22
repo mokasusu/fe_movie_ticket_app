@@ -181,32 +181,49 @@ class ShowtimeCard extends StatelessWidget {
                     final timeStr =
                         "${s.tgBatDau.hour.toString().padLeft(2, '0')}:${s.tgBatDau.minute.toString().padLeft(2, '0')}";
 
-                    return InkWell(
-                      onTap: () => onShowtimeSelected(s),
-                      borderRadius: BorderRadius.circular(8),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                        decoration: BoxDecoration(
-                          color: AppColors.bgElevated,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: AppColors.neonBlue),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.gold.withOpacity(0.15),
-                              blurRadius: 4,
-                              offset: const Offset(0, 2),
-                            )
-                          ],
-                        ),
-                        child: Text(
-                          timeStr,
-                          style: const TextStyle(
-                            color: AppColors.gold,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15,
+                    return StatefulBuilder(
+                      builder: (context, setState) {
+                        bool isPressed = false;
+
+                        return GestureDetector(
+                          onTapDown: (_) => setState(() => isPressed = true),
+                          onTapUp: (_) {
+                            setState(() => isPressed = false);
+                            onShowtimeSelected(s);
+                          },
+                          onTapCancel: () => setState(() => isPressed = false),
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 100),
+                            curve: Curves.easeOut,
+                            transform: isPressed
+                                ? (Matrix4.identity()..scale(0.95))
+                                : Matrix4.identity(),
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                            decoration: BoxDecoration(
+                              color: isPressed
+                                  ? AppColors.gold.withOpacity(0.2)
+                                  : AppColors.bgSecondary,
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: AppColors.gold, width: 1.2),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppColors.gold.withOpacity(isPressed ? 0.1 : 0.25),
+                                  blurRadius: 6,
+                                  offset: const Offset(0, 3),
+                                ),
+                              ],
+                            ),
+                            child: Text(
+                              timeStr,
+                              style: const TextStyle(
+                                color: AppColors.gold,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
+                        );
+                      },
                     );
                   }).toList(),
                 ),

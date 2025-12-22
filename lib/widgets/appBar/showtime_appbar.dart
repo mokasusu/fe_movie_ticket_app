@@ -22,7 +22,14 @@ class ShowtimeAppBar extends StatelessWidget implements PreferredSizeWidget {
         style: TextStyle(
           fontWeight: FontWeight.bold,
           fontSize: 20,
-          color: AppColors.textPrimary, // Chữ trắng
+          color: AppColors.gold, // Chữ vàng điện ảnh
+          shadows: [
+            Shadow(
+              offset: Offset(0,0.2),
+              blurRadius: 2.0,
+              color: AppColors.gold,
+            ),
+          ],
         ),
       ),
 
