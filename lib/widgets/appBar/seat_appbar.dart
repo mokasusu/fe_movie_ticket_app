@@ -10,7 +10,7 @@ class SeatAppBar extends StatelessWidget implements PreferredSizeWidget {
       leading: IconButton(
         icon: const Icon(
           Icons.arrow_back,
-          color: AppColors.gold,
+          color: AppColors.textPrimary,
         ),
         onPressed: () => Navigator.pop(context),
       ),
@@ -20,12 +20,12 @@ class SeatAppBar extends StatelessWidget implements PreferredSizeWidget {
         style: TextStyle(
           fontWeight: FontWeight.bold,
           fontSize: 20,
-          color: AppColors.gold,
+          color: AppColors.textPrimary,
           shadows: [
             Shadow(
               offset: Offset(0,0.2),
               blurRadius: 2.0,
-              color: AppColors.gold,
+              color: AppColors.textPrimary,
             ),
           ],
         ),

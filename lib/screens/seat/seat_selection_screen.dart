@@ -83,7 +83,7 @@ class _SeatScreenState extends State<SeatScreen> {
                       children: [
                         // Màn hình
                         BookingInfoBar(
-                          posterUrl: widget.movie.anhPosterNgang,
+                          posterUrl: widget.movie.anhPosterDoc,
                           movieTitle: widget.movie.tenPhim,
                           cinemaName: widget.cinema.tenRap,
                           roomName: widget.showtime.tenPhong,

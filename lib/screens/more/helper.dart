@@ -13,6 +13,7 @@ class HelperScreen extends StatelessWidget {
         title: const Text(
           'Hỗ Trợ',
           style: TextStyle(
+            fontSize: 20,
             fontWeight: FontWeight.bold,
             color: AppColors.textPrimary,
           ),

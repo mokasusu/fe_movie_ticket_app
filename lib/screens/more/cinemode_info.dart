@@ -12,6 +12,7 @@ class CinemaModeInfoScreen extends StatelessWidget {
         title: const Text(
           'Về CINEMODE',
           style: TextStyle(
+            fontSize: 20,
             color: AppColors.textPrimary,
             fontWeight: FontWeight.bold,
           ),

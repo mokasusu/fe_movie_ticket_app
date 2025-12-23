@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:home/theme/colors.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class NewsDetailScreen extends StatefulWidget {
@@ -17,7 +18,7 @@ class NewsDetailScreen extends StatefulWidget {
 
 class _NewsDetailScreenState extends State<NewsDetailScreen> {
   late final WebViewController _controller;
-  bool isLoading = true; // Biến trạng thái để hiện loading
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -47,11 +48,15 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
       appBar: AppBar(
         title: Text(
           widget.title,
-          style: const TextStyle(fontSize: 16),
-          overflow: TextOverflow.ellipsis, // Cắt bớt nếu tiêu đề quá dài
+          style: const TextStyle(
+            fontSize: 20,
+            color: AppColors.textPrimary,
+            fontWeight: FontWeight.bold
+          ),
+          overflow: TextOverflow.ellipsis,
         ),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        backgroundColor: AppColors.bgPrimary,
+        foregroundColor: AppColors.textPrimary,
         elevation: 1,
       ),
       body: Stack(
@@ -62,7 +67,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
           // 2. Hiển thị vòng xoay khi đang tải
           if (isLoading)
             const Center(
-              child: CircularProgressIndicator(color: Colors.orange),
+              child: CircularProgressIndicator(color: AppColors.gold),
             ),
         ],
       ),

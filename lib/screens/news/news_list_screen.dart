@@ -42,6 +42,7 @@ class NewsListScreen extends StatelessWidget {
         title: const Text(
           "Tin Tức",
           style: TextStyle(
+            fontSize: 20,
             color: AppColors.textPrimary,
             fontWeight: FontWeight.bold,
           ),

@@ -111,7 +111,7 @@ class _CinemaListScreenState extends State<CinemaListScreen> {
               widget.selectedMovie != null ? 'Chọn rạp' : 'Danh sách rạp',
               style: const TextStyle(
                 color: AppColors.textPrimary,
-                fontSize: 18,
+                fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
               textAlign: TextAlign.center,

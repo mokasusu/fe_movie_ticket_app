@@ -14,6 +14,7 @@ class MoreScreen extends StatelessWidget {
         title: const Text(
           "Mở rộng",
           style: TextStyle(
+            fontSize: 20,
             fontWeight: FontWeight.bold,
             color: AppColors.textPrimary,
           ),

@@ -11,7 +11,7 @@ class ShowtimeAppBar extends StatelessWidget implements PreferredSizeWidget {
       leading: IconButton(
         icon: const Icon(
           Icons.arrow_back,
-          color: AppColors.gold, // Accent vàng điện ảnh
+          color: AppColors.textPrimary, // Accent vàng điện ảnh
         ),
         onPressed: () => Navigator.pop(context),
       ),
@@ -22,12 +22,12 @@ class ShowtimeAppBar extends StatelessWidget implements PreferredSizeWidget {
         style: TextStyle(
           fontWeight: FontWeight.bold,
           fontSize: 20,
-          color: AppColors.gold, // Chữ vàng điện ảnh
+          color: AppColors.textPrimary, // Chữ vàng điện ảnh
           shadows: [
             Shadow(
               offset: Offset(0,0.2),
               blurRadius: 2.0,
-              color: AppColors.gold,
+              color: AppColors.textPrimary,
             ),
           ],
         ),
