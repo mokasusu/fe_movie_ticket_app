@@ -44,26 +44,44 @@ class _ShowtimeScreenState extends State<ShowtimeScreen> {
   Future<void> _loadShowtimes() async {
     setState(() => isLoading = true);
 
-    _allShowtimes = await ShowtimeService.searchShowtimes(
-      maPhim: widget.selectedMovie?.maPhim,
-      maRap: widget.selectedCinema.maRap,
-    );
+    try {
+      // 1. Khởi tạo Service (Vì hàm searchShowtimes không còn là static)
+      final showtimeService = ShowtimeService();
 
-    final maPhimSet = _allShowtimes
-        .map((s) => s.maPhim)
-        .toSet();
+      // 2. Gọi hàm thông qua biến showtimeService
+      _allShowtimes = await showtimeService.searchShowtimes(
+        maPhim: widget.selectedMovie?.maPhim,
+        maRap: widget.selectedCinema.maRap,
+      );
 
-    if (maPhimSet.isNotEmpty) {
-      final movies = await MovieService.fetchAllMovies();
-      movieMap = {
-        for (var m in movies)
-          if (maPhimSet.contains(m.maPhim)) m.maPhim: m
-      };
+      // 3. Xử lý logic map phim
+      final maPhimSet = _allShowtimes.map((s) => s.maPhim).toSet();
+
+      if (maPhimSet.isNotEmpty) {
+        // Lưu ý: Nếu MovieService cũng không phải static thì cần khởi tạo tương tự
+        // final movieService = MovieService();
+        // final movies = await movieService.fetchAllMovies();
+
+        // Giả sử MovieService vẫn là static:
+        final movies = await MovieService.fetchAllMovies();
+
+        movieMap = {
+          for (var m in movies)
+            if (maPhimSet.contains(m.maPhim)) m.maPhim: m
+        };
+      }
+
+      _buildMovieShowtimes();
+
+    } catch (e) {
+      print("Lỗi tải suất chiếu: $e");
+      // Có thể thêm thông báo lỗi cho người dùng ở đây
+    } finally {
+      // 4. Kiểm tra mounted trước khi setState để tránh lỗi "setState called after dispose"
+      if (mounted) {
+        setState(() => isLoading = false);
+      }
     }
-
-    _buildMovieShowtimes();
-
-    setState(() => isLoading = false);
   }
 
   void _navigateToSeatScreen({

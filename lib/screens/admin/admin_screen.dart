@@ -2,6 +2,7 @@ import '../admin/film_screens/movie_management_screen.dart';
 import 'package:flutter/material.dart';
 import '../../utils/storage.dart';
 import '../login_screen.dart';
+import '../admin/ShowtimeManagementScreen.dart';
 
 class AdminHomeScreen extends StatelessWidget {
   const AdminHomeScreen({super.key});
@@ -52,7 +53,12 @@ class AdminHomeScreen extends StatelessWidget {
                       MaterialPageRoute(builder: (context) => const MovieManagementScreen()),
                     );
                   }),
-                  _buildMenuCard(Icons.calendar_today, "Suất chiếu", Colors.blue, () {}),
+                  _buildMenuCard(Icons.calendar_today, "Suất chiếu", Colors.blue, () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const ShowtimeManagementScreen()),
+                    );
+                  }),
                   _buildMenuCard(Icons.confirmation_number, "Quản lý Vé", Colors.green, () {}),
                   _buildMenuCard(Icons.people, "Người dùng", Colors.purple, () {}),
                   _buildMenuCard(Icons.bar_chart, "Doanh thu", Colors.redAccent, () {}),

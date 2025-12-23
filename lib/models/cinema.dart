@@ -16,4 +16,13 @@ class Cinema {
       diaDiem: json['diaDiem'],
     );
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is Cinema && other.maRap == maRap;
+  }
+
+  @override
+  int get hashCode => maRap.hashCode;
 }

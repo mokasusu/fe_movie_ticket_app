@@ -9,6 +9,24 @@ class FilmService {
   // Endpoint gốc (dựa trên cấu hình trước đó của bạn: .../mobile/films)
   final String _endpoint = "/films";
 
+  Future<List<FilmResponse>> getNowShowingFilms() async {
+    try {
+      // Gọi API: GET /films/now-showing
+      final response = await _dio.get('$_endpoint/now-showing');
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = response.data;
+        return data.map((e) => FilmResponse.fromJson(e)).toList();
+      } else {
+        return [];
+      }
+    } on DioException catch (e) {
+      print("🔥 Lỗi lấy phim đang chiếu: ${e.message}");
+      // Có thể return empty list thay vì throw lỗi để UI không bị crash
+      return [];
+    }
+  }
+
   // 1. Lấy danh sách (Có tìm kiếm và phân trang)
   Future<List<FilmResponse>> getAllFilms({String? keyword}) async {
     try {
