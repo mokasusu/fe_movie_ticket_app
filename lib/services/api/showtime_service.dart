@@ -8,21 +8,26 @@ class ShowtimeService {
   final Dio _dio = DioClient.dio;
   final String _endpoint = "/showtimes";
 
-  // 1. Tìm kiếm suất chiếu (Đã sửa: Bỏ 'static' để dùng được _dio và _endpoint)
+  
   Future<List<Showtime>> searchShowtimes({String? maPhim, int? maRap}) async {
     try {
       final response = await _dio.get(
-        _endpoint,
+        "$_endpoint/search",
         queryParameters: {
-          if (maPhim != null) 'maPhim': maPhim,
+          // Chỉ gửi tham số nếu nó không null
+          if (maPhim != null && maPhim.isNotEmpty) 'maPhim': maPhim,
           if (maRap != null) 'maRap': maRap,
         },
       );
 
-      final List data = response.data;
-      return data.map((e) => Showtime.fromJson(e)).toList();
+      // Parse dữ liệu trả về thành List<Showtime>
+      if (response.statusCode == 200) {
+        final List data = response.data;
+        return data.map((e) => Showtime.fromJson(e)).toList();
+      }
+      return [];
     } catch (e) {
-      print("❌ Lỗi lấy suất chiếu: $e");
+      print("❌ Lỗi tìm kiếm suất chiếu: $e");
       return [];
     }
   }

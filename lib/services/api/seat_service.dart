@@ -9,15 +9,32 @@ class SeatService {
       final response = await DioClient.dio.get("$_endpoint/booked/$showtimeId");
 
       if (response.statusCode == 200) {
-        final List<dynamic> data = response.data;
+        final data = response.data;
 
-        // --- ĐOẠN QUAN TRỌNG NHẤT ---
-        // Biến đổi List<Object> thành List<String>
-        return data.map((json) {
-          // Chỉ lấy về mã ghế
-          return json['maGhe'].toString();
-        }).toList();
-        // -----------------------------
+        // Xử lý nếu data là List trực tiếp
+        if (data is List) {
+          return data.map((item) {
+            // Nếu item là String trực tiếp
+            if (item is String) {
+              return item;
+            }
+            // Nếu item là Map với key 'maGhe'
+            if (item is Map) {
+              return item['maGhe'].toString();
+            }
+            return item.toString();
+          }).toList();
+        }
+
+        // Xử lý nếu data là Map với key chứa list
+        if (data is Map && data.containsKey('data')) {
+          final List<dynamic> listData = data['data'];
+          return listData.map((item) {
+            if (item is String) return item;
+            if (item is Map) return item['maGhe'].toString();
+            return item.toString();
+          }).toList();
+        }
       }
       return [];
     } catch (e) {

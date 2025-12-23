@@ -5,11 +5,11 @@ import '../../models/userRequest.dart';
 import '../../services/api/user_service.dart';
 import '../../services/auth/auth_service.dart';
 
-// Import các widget con đã thiết kế
+// Import các widget
 import '../../widgets/user/user_membership.dart';
 import '../../widgets/user/options.dart';
 
-// Import các màn hình con (để điều hướng)
+// Import các màn hình con
 import 'edit_info.dart';
 import 'change_password.dart';
 import 'invoice_screen.dart';
@@ -49,7 +49,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
           style: TextStyle(color: AppColors.textPrimary),
         ),
         content: const Text(
-          "Bạn có chắc chắn muốn đăng xuất khỏi tài khoản này?",
+          "Bạn có chắc chắn muốn đăng xuất?",
           style: TextStyle(color: AppColors.textSecondary),
         ),
         actions: [
