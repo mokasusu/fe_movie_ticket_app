@@ -79,15 +79,6 @@ class _PayScreenState extends State<PayScreen> {
       showDialog(
         context: context,
         builder: (context) => PaymentSuccessDialog(
-          onViewTicket: () {
-            Navigator.pop(context); // Đóng dialog trước khi điều hướng
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => InvoiceHistoryScreen(userId: user.id ?? ""),
-              ),
-            );
-          },
           onBackToHome: () {
             // Đóng dialog và chuyển về HomeScreen
             Navigator.of(context, rootNavigator: true).pop();

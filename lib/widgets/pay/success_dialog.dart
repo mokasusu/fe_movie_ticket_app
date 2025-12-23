@@ -2,14 +2,9 @@ import 'package:flutter/material.dart';
 import '../../theme/colors.dart';
 
 class PaymentSuccessDialog extends StatelessWidget {
-  final VoidCallback onViewTicket;
   final VoidCallback onBackToHome;
 
-  const PaymentSuccessDialog({
-    super.key,
-    required this.onViewTicket,
-    required this.onBackToHome,
-  });
+  const PaymentSuccessDialog({super.key, required this.onBackToHome});
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +41,7 @@ class PaymentSuccessDialog extends StatelessWidget {
                 size: 70,
               ),
             ),
-            
+
             const SizedBox(height: 24),
 
             // 2. Tiêu đề
@@ -59,7 +54,7 @@ class PaymentSuccessDialog extends StatelessWidget {
               ),
               textAlign: TextAlign.center,
             ),
-            
+
             const SizedBox(height: 12),
 
             // 3. Nội dung mô tả
@@ -72,14 +67,14 @@ class PaymentSuccessDialog extends StatelessWidget {
               ),
               textAlign: TextAlign.center,
             ),
-            
+
             const SizedBox(height: 32),
 
-            // 4. Nút Xem Vé (Chính)
+            // 4. Nút Về trang chủ
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: onViewTicket,
+                onPressed: onBackToHome,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.gold,
                   foregroundColor: Colors.black,
@@ -90,35 +85,8 @@ class PaymentSuccessDialog extends StatelessWidget {
                   elevation: 0,
                 ),
                 child: const Text(
-                  "Xem vé ngay",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-            
-            const SizedBox(height: 12),
-
-            // 5. Nút Về trang chủ (Phụ)
-            SizedBox(
-              width: double.infinity,
-              child: TextButton(
-                onPressed: onBackToHome,
-                style: TextButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: const Text(
                   "Về trang chủ",
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: AppColors.textSecondary,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
