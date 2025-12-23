@@ -11,6 +11,7 @@ import '../../widgets/user/options.dart';
 // Import các màn hình con (để điều hướng)
 import 'edit_info.dart';
 import 'change_password.dart';
+import 'invoice_screen.dart';
 import '../login_screen.dart';
 
 class UserProfileScreen extends StatefulWidget {
@@ -42,7 +43,10 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.bgSecondary,
-        title: const Text("Đăng xuất?", style: TextStyle(color: AppColors.textPrimary)),
+        title: const Text(
+          "Đăng xuất?",
+          style: TextStyle(color: AppColors.textPrimary),
+        ),
         content: const Text(
           "Bạn có chắc chắn muốn đăng xuất khỏi tài khoản này?",
           style: TextStyle(color: AppColors.textSecondary),
@@ -50,13 +54,16 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text("Hủy", style: TextStyle(color: AppColors.textMuted)),
+            child: const Text(
+              "Hủy",
+              style: TextStyle(color: AppColors.textMuted),
+            ),
           ),
           TextButton(
             onPressed: () async {
               Navigator.pop(ctx);
               await AuthService.logout();
-              
+
               if (!mounted) return;
               // Chuyển về màn hình Login và xóa hết lịch sử
               Navigator.of(context).pushAndRemoveUntil(
@@ -64,7 +71,10 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                 (route) => false,
               );
             },
-            child: const Text("Đăng xuất", style: TextStyle(color: AppColors.red)),
+            child: const Text(
+              "Đăng xuất",
+              style: TextStyle(color: AppColors.red),
+            ),
           ),
         ],
       ),
@@ -104,10 +114,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         elevation: 0,
         actions: [
           // Nút refresh nhỏ trên appbar
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _loadData,
-          ),
+          IconButton(icon: const Icon(Icons.refresh), onPressed: _loadData),
         ],
       ),
       body: RefreshIndicator(
@@ -130,7 +137,11 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.error_outline, color: AppColors.red, size: 48),
+                    const Icon(
+                      Icons.error_outline,
+                      color: AppColors.red,
+                      size: 48,
+                    ),
                     const SizedBox(height: 16),
                     Text(
                       "Có lỗi xảy ra tải thông tin",
@@ -138,8 +149,11 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                     ),
                     TextButton(
                       onPressed: _loadData,
-                      child: const Text("Thử lại", style: TextStyle(color: AppColors.gold)),
-                    )
+                      child: const Text(
+                        "Thử lại",
+                        style: TextStyle(color: AppColors.gold),
+                      ),
+                    ),
                   ],
                 ),
               );
@@ -147,14 +161,17 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
 
             // 3. Chưa đăng nhập hoặc data null
             if (!snapshot.hasData || snapshot.data == null) {
-               return const Center(child: Text("Không tìm thấy thông tin người dùng"));
+              return const Center(
+                child: Text("Không tìm thấy thông tin người dùng"),
+              );
             }
 
             // 4. Có dữ liệu -> Hiển thị UI chính
             final user = snapshot.data!;
 
             return SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(), // Để RefreshIndicator hoạt động dù nội dung ngắn
+              physics:
+                  const AlwaysScrollableScrollPhysics(), // Để RefreshIndicator hoạt động dù nội dung ngắn
               padding: const EdgeInsets.all(20),
               child: Column(
                 children: [
@@ -169,19 +186,20 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                   // --- WIDGET 2: MENU LỰA CHỌN ---
                   ProfileMenuOptions(
                     onPersonalInfoTap: () => _navigateToEditProfile(user),
-                    
                     onInvoicesTap: () {
-                      print("Xem lịch sử hóa đơn");
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => InvoiceHistoryScreen(userId: user.id),
+                        ),
+                      );
                     },
-                    
                     onChangePasswordTap: _navigateToChangePassword,
-                    
                     onLogoutTap: _handleLogout,
                   ),
 
                   const SizedBox(height: 40),
 
-                  
                   const Text(
                     "Version 1.0.0",
                     style: TextStyle(color: AppColors.textMuted, fontSize: 12),
