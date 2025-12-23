@@ -5,7 +5,7 @@ import '../../theme/colors.dart';
 import '../../models/food.dart';
 
 class FoodItemWidget extends StatelessWidget {
-  final Food food;
+  final FoodItem food;
   final int quantity;
   final VoidCallback onAdd;
   final VoidCallback onRemove;
@@ -44,7 +44,7 @@ class FoodItemWidget extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(food.tenDoAn ?? "Món ăn",
+                Text(food.tenFoodItem ?? "Món ăn",
                     style: const TextStyle(color: AppColors.textPrimary, fontSize: 16, fontWeight: FontWeight.bold)),
                 Text(currencyFormat.format(food.gia ?? 0),
                     style: const TextStyle(color: AppColors.textSecondary, fontSize: 14)),

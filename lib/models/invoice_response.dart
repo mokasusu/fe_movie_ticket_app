@@ -27,26 +27,14 @@ class InvoiceResponse {
     this.doAnList = const [],
   });
 
-  // =======================================================
-  // PHẦN TÍNH TOÁN BỔ SUNG (GETTERS)
-  // Dùng dữ liệu từ gheList và doAnList để tính ra số liệu chi tiết
-  // =======================================================
-
-  /// 1. Tính tổng tiền ghế
-  /// Cộng dồn giá của từng ghế trong danh sách
   double get tongTienGhe {
     return gheList.fold(0.0, (sum, seat) => sum + (seat.gia ?? 0));
   }
 
-  /// 2. Tính tổng tiền đồ ăn
-  /// Cộng dồn thành tiền của từng món
   double get tongTienDoAn {
     return doAnList.fold(0.0, (sum, food) => sum + (food.thanhTien ?? 0));
   }
 
-  // =======================================================
-  // PARSE JSON (Mapping dữ liệu từ API)
-  // =======================================================
   factory InvoiceResponse.fromJson(Map<String, dynamic> json) {
     return InvoiceResponse(
       maHoaDon: json['maHoaDon'] as int?,
@@ -80,9 +68,6 @@ class InvoiceResponse {
   }
 }
 
-// =======================================================
-// CLASS CON: GHE RESPONSE
-// =======================================================
 class InvoiceSeat {
   final String? maSeatType;
   final String? tenLoaiGhe;
@@ -103,15 +88,12 @@ class InvoiceSeat {
   }
 }
 
-// =======================================================
-// CLASS CON: DO AN RESPONSE
-// =======================================================
 class InvoiceFood {
   final String? foodId;
   final String? tenDoAn;
   final int? soLuong;
   final double? gia;
-  final double? thanhTien; // Backend đã tính sẵn (gia * soLuong)
+  final double? thanhTien;
 
   InvoiceFood({
     this.foodId,

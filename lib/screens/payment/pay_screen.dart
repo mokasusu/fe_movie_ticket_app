@@ -21,6 +21,7 @@ import '../../widgets/pay/food_item_widget.dart';
 import '../../widgets/pay/voucher_selector.dart';
 import '../../widgets/pay/qr_dialog.dart';
 import '../../widgets/pay/success_dialog.dart';
+import '../home/home_screen.dart';
 
 class PayScreen extends StatefulWidget {
   final FilmResponse movie;
@@ -53,7 +54,13 @@ class _PayScreenState extends State<PayScreen> {
       return;
     }
 
-    // 2. Tạo request hóa đơn từ dữ liệu hiện tại
+    // 2. Lấy danh sách đồ ăn đã chọn (id và số lượng)
+    final List<FoodRequest> doAnList = _foodQuantities.entries
+        .where((e) => e.value > 0)
+        .map((e) => FoodRequest(foodId: e.key, soLuong: e.value))
+        .toList();
+
+    // 3. Tạo request hóa đơn từ dữ liệu hiện tại
     final invoiceRequest = InvoiceRequest(
       maUser: user.id, // Truyền đúng userId lấy từ API
       maSuatChieu: widget.showtime.id,
@@ -61,13 +68,10 @@ class _PayScreenState extends State<PayScreen> {
       gheList: widget.seatNumbers
           .map((seat) => SeatRequest(maSeatType: seat))
           .toList(),
-      doAnList: _foodQuantities.entries
-          .where((e) => e.value > 0)
-          .map((e) => FoodRequest(foodId: e.key, soLuong: e.value))
-          .toList(),
+      doAnList: doAnList,
     );
 
-    // 3. Gọi API tạo hóa đơn
+    // 4. Gọi API tạo hóa đơn
     final response = await InvoiceService.createInvoice(invoiceRequest);
     if (response != null) {
       // Thành công: Hiển thị dialog thành công
@@ -79,8 +83,12 @@ class _PayScreenState extends State<PayScreen> {
             Navigator.pop(context);
           },
           onBackToHome: () {
-            Navigator.pop(context);
-            Navigator.pop(context);
+            // Đóng dialog và chuyển về HomeScreen
+            Navigator.of(context, rootNavigator: true).pop();
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (_) => const HomeScreen()),
+              (route) => false,
+            );
           },
         ),
       );
@@ -93,7 +101,7 @@ class _PayScreenState extends State<PayScreen> {
   }
 
   // List of available foods fetched from API
-  List<Food> _availableFoods = [];
+  List<FoodItem> _availableFoods = [];
   bool _isLoadingFoods = true;
 
   // Currently selected voucher
@@ -114,8 +122,9 @@ class _PayScreenState extends State<PayScreen> {
     });
     try {
       final foods = await FoodService.fetchFoods();
+      // Đảm bảo foods là List<FoodItem>
       setState(() {
-        _availableFoods = foods;
+        _availableFoods = foods.cast<FoodItem>();
         _isLoadingFoods = false;
       });
     } catch (e) {
@@ -127,12 +136,12 @@ class _PayScreenState extends State<PayScreen> {
 
   // Calculate total food price using PriceCalculator
   double get _totalFoodPrice {
-    // Create a list of selected foods with their quantities
-    List<Food> selectedFoods = _availableFoods.map((food) {
-      int qty = _foodQuantities[food.foodId] ?? 0;
-      return Food(
-        foodId: food.foodId,
-        tenDoAn: food.tenDoAn,
+    // Tính tổng tiền các món đã chọn
+    List<FoodItem> selectedFoods = _availableFoods.map((food) {
+      int qty = _foodQuantities[food.maFoodItem ?? ""] ?? 0;
+      return FoodItem(
+        maFoodItem: food.maFoodItem,
+        tenFoodItem: food.tenFoodItem,
         gia: food.gia,
         soLuong: qty,
       );
@@ -142,23 +151,6 @@ class _PayScreenState extends State<PayScreen> {
 
   // Handle continue action
   void _onContinue() {
-    // Filter selected foods to send to the next step
-    List<Food> selectedFoods = [];
-    _foodQuantities.forEach((id, qty) {
-      if (qty > 0) {
-        Food originalFood = _availableFoods.firstWhere((f) => f.foodId == id);
-        selectedFoods.add(
-          Food(
-            foodId: originalFood.foodId,
-            tenDoAn: originalFood.tenDoAn,
-            gia: originalFood.gia,
-            soLuong: qty,
-            thanhTien: (originalFood.gia ?? 0) * qty,
-          ),
-        );
-      }
-    });
-
     // Hiển thị popup QRDialog khi nhấn nút thanh toán
     showDialog(
       context: context,
@@ -265,17 +257,20 @@ class _PayScreenState extends State<PayScreen> {
                     itemCount: _availableFoods.length,
                     itemBuilder: (context, index) {
                       final food = _availableFoods[index];
-                      final qty = _foodQuantities[food.foodId] ?? 0;
+                      final qty = _foodQuantities[food.maFoodItem ?? ""] ?? 0;
                       return FoodItemWidget(
                         food: food,
                         quantity: qty,
                         onAdd: () => setState(() {
-                          _foodQuantities[food.foodId ?? ""] = qty + 1;
+                          final id = food.maFoodItem ?? "";
+                          _foodQuantities[id] = (_foodQuantities[id] ?? 0) + 1;
                         }),
                         onRemove: () {
-                          if (qty > 0) {
+                          final id = food.maFoodItem ?? "";
+                          if ((_foodQuantities[id] ?? 0) > 0) {
                             setState(() {
-                              _foodQuantities[food.foodId ?? ""] = qty - 1;
+                              _foodQuantities[id] =
+                                  (_foodQuantities[id] ?? 0) - 1;
                             });
                           }
                         },

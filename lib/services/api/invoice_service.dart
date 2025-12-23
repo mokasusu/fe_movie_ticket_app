@@ -4,6 +4,30 @@ import '../../models/invoice_response.dart';
 import '../../models/invoice_request.dart';
 
 class InvoiceService {
+  // Lấy lịch sử hóa đơn theo user
+  static Future<List<InvoiceResponse>> getInvoicesByUser(String maUser) async {
+    try {
+      final response = await DioClient.dio.get('/invoices/history/$maUser');
+      if (response.statusCode == 200 && response.data is List) {
+        return (response.data as List)
+            .map((e) => InvoiceResponse.fromJson(e))
+            .toList();
+      } else if (response.statusCode == 200 && response.data is Map) {
+        // Trường hợp trả về 1 hóa đơn duy nhất dạng object
+        return [InvoiceResponse.fromJson(response.data)];
+      } else {
+        print('⚠️ Không lấy được danh sách hóa đơn: ${response.statusCode}');
+        return [];
+      }
+    } on DioException catch (e) {
+      print('❌ Lỗi API getInvoicesByUser: ${e.response?.statusCode}');
+      print('   Chi tiết lỗi: ${e.response?.data}');
+      return [];
+    } catch (e) {
+      print('❌ Lỗi không xác định: $e');
+      return [];
+    }
+  }
 
   static const String _endpoint = "/invoices";
 
@@ -22,7 +46,7 @@ class InvoiceService {
       // 3. Xử lý phản hồi
       if (response.statusCode == 200 || response.statusCode == 201) {
         print("✅ Tạo hóa đơn thành công!");
-        
+
         return InvoiceResponse.fromJson(response.data);
       } else {
         print("⚠️ Lỗi Server: ${response.statusCode}");

@@ -1,3 +1,5 @@
+import 'food.dart';
+
 class InvoiceRequest {
   final String maUser;
   final int maSuatChieu; // Java Long -> Dart int
@@ -37,17 +39,13 @@ class SeatRequest {
     };
   }
 }
-
-// Class con cho Đồ ăn
 class FoodRequest {
-  final String foodId;
-  final int soLuong;
-
+  final String foodId; // Mapping với Java: String foodId
+  final int soLuong; // Số lượng món ăn
   FoodRequest({
     required this.foodId,
     required this.soLuong,
   });
-
   Map<String, dynamic> toJson() {
     return {
       'foodId': foodId,

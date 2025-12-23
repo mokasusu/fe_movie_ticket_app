@@ -1,6 +1,8 @@
+import 'package:home/models/food.dart';
+
 import '../../models/voucher.dart';
 import '../../models/seat.dart';
-import '../../models/food.dart';
+import '../../models/invoice_request.dart';
 // chứa các hàm sử dụng lại trong toàn bộ ứng dụng
 
 bool isSameDate(DateTime a, DateTime b) {
@@ -24,7 +26,7 @@ class PriceCalculator {
   }
 
   /// Tính tổng tiền đồ ăn (Giá * Số lượng)
-  static double calcFoodTotal(List<Food> foods) {
+  static double calcFoodTotal(List<FoodItem> foods) {
     return foods.fold(0.0, (sum, food) => sum + ((food.gia ?? 0) * (food.soLuong ?? 0)));
   }
 

@@ -1,32 +1,27 @@
-class Food {
-  final String? foodId;
-  final String? tenDoAn;
-  final int? soLuong;
+class FoodItem {
+  final String? maFoodItem;
+  final String? tenFoodItem;
   final double? gia;
-  final double? thanhTien;
+  final String? urlPoster;
+  final String? phanLoai;
+  final int? soLuong;
 
-  Food({
-    this.foodId,
-    this.tenDoAn,
-    this.soLuong,
+  FoodItem({
+    this.maFoodItem,
+    this.tenFoodItem,
     this.gia,
-    this.thanhTien,
+    this.urlPoster,
+    this.phanLoai,
+    this.soLuong,
   });
 
-  factory Food.fromJson(Map<String, dynamic> json) {
-    return Food(
-      foodId: json['foodId'] as String?,
-      tenDoAn: json['tenDoAn'] as String?,
-      soLuong: json['soLuong'] as int?,
+  factory FoodItem.fromJson(Map<String, dynamic> json) {
+    return FoodItem(
+      maFoodItem: json['maFoodItem'] as String?,
+      tenFoodItem: json['tenFoodItem'] as String?,
       gia: (json['gia'] as num?)?.toDouble(),
-      thanhTien: (json['thanhTien'] as num?)?.toDouble(),
+      urlPoster: json['urlPoster'] as String?,
+      phanLoai: json['phanLoai'] as String?,
     );
-  }
-
-  Map<String, dynamic> toJson(int quantitySelected) {
-    return {
-      "foodId": foodId,
-      "soLuong": quantitySelected,
-    };
   }
 }

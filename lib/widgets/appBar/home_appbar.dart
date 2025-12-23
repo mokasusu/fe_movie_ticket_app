@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../theme/colors.dart';
 import '../../screens/userInfomation/profile.dart';
+import '../../screens/invoice/invoice_screen.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   const CustomAppBar({super.key});
@@ -14,9 +15,13 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   // Hàm xử lý khi nhấn nút Lịch sử Đặt vé
-  void _handleHistoryClick() {
+  void _handleHistoryClick(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const InvoiceHistoryScreen()),
+    );
     print('Nút Lịch sử Đặt vé đã được nhấn!');
-    // Thêm logic điều hướng đến trang lịch sử tại đây
+    
   }
 
   // Chiều cao AppBar
@@ -27,15 +32,10 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return AppBar(
       toolbarHeight: preferredSize.height,
-
-      // 🎬 Nền tối điện ảnh
       backgroundColor: AppColors.bgPrimary,
-
-      // Bóng đổ nhẹ, không gắt
       elevation: 6.0,
       shadowColor: Colors.black.withOpacity(0.4),
-
-      // 1️⃣ Bên trái – Hồ sơ người dùng
+      //người dùng
       leading: Padding(
         padding: const EdgeInsets.only(left: 8.0),
         child: IconButton(
@@ -48,8 +48,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           tooltip: 'Hồ sơ người dùng',
         ),
       ),
-
-      // 2️⃣ Ở giữa – Logo / biểu tượng app
+      //logo
       title: Center(
         child: Image.asset(
           'assets/images/cinemode.png',
@@ -59,11 +58,11 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       ),
       centerTitle: true,
 
-      // 3️⃣ Bên phải – Lịch sử đặt vé
+      // lịch sử
       actions: <Widget>[
         IconButton(
           icon: const Icon(Icons.confirmation_num, color: AppColors.gold),
-          onPressed: _handleHistoryClick,
+          onPressed: () => _handleHistoryClick(context),
           tooltip: 'Lịch sử Đặt vé',
         ),
         const SizedBox(width: 8.0),
