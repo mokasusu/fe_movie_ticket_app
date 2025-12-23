@@ -102,8 +102,10 @@ class _CinemaListScreenState extends State<CinemaListScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.bgSecondary,
         iconTheme: const IconThemeData(color: AppColors.textPrimary),
+        centerTitle: true,
         title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
               widget.selectedMovie != null ? 'Chọn rạp' : 'Danh sách rạp',
@@ -112,14 +114,17 @@ class _CinemaListScreenState extends State<CinemaListScreen> {
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
+              textAlign: TextAlign.center,
             ),
             if (widget.selectedMovie != null)
               Text(
                 widget.selectedMovie!.tenPhim,
                 style: const TextStyle(
                   color: AppColors.textSecondary,
-                  fontSize: 12,
+                  fontSize: 14,
+                  fontWeight: FontWeight.normal,
                 ),
+                textAlign: TextAlign.center,
               ),
           ],
         ),
@@ -133,9 +138,7 @@ class _CinemaListScreenState extends State<CinemaListScreen> {
           Expanded(
             child: _isLoading
                 ? const Center(
-                    child: CircularProgressIndicator(
-                      color: AppColors.gold,
-                    ),
+                    child: CircularProgressIndicator(color: AppColors.gold),
                   )
                 : ValueListenableBuilder<List<Cinema>>(
                     valueListenable: _filteredCinemas,
@@ -150,10 +153,11 @@ class _CinemaListScreenState extends State<CinemaListScreen> {
                       }
                       return ListView.separated(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 8),
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
                         itemCount: cinemas.length,
-                        separatorBuilder: (_, __) =>
-                            const SizedBox(height: 6),
+                        separatorBuilder: (_, __) => const SizedBox(height: 6),
                         itemBuilder: (context, index) {
                           final cinema = cinemas[index];
                           return Card(
@@ -163,8 +167,10 @@ class _CinemaListScreenState extends State<CinemaListScreen> {
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: ListTile(
-                              contentPadding:
-                                  const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 8,
+                              ),
                               leading: Container(
                                 width: 36,
                                 height: 36,
@@ -180,13 +186,15 @@ class _CinemaListScreenState extends State<CinemaListScreen> {
                               title: Text(
                                 cinema.tenRap,
                                 style: const TextStyle(
-                                    color: AppColors.textPrimary,
-                                    fontWeight: FontWeight.w600),
+                                  color: AppColors.textPrimary,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
                               subtitle: Text(
                                 cinema.diaDiem,
                                 style: const TextStyle(
-                                    color: AppColors.textSecondary),
+                                  color: AppColors.textSecondary,
+                                ),
                               ),
                               trailing: const Icon(
                                 Icons.chevron_right,

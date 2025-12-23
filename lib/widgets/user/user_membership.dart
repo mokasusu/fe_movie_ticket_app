@@ -49,7 +49,7 @@ class UserMembershipCard extends StatelessWidget {
               children: [
                 _buildAvatarSection(),
                 const SizedBox(height: 15),
-                
+
                 // Tên người dùng
                 Text(
                   user.hoTen ?? "Khách hàng thân thiết",
@@ -60,7 +60,7 @@ class UserMembershipCard extends StatelessWidget {
                     letterSpacing: 0.5,
                   ),
                 ),
-                
+
                 // Email
                 Text(
                   user.email ?? "user@example.com",
@@ -88,10 +88,10 @@ class UserMembershipCard extends StatelessWidget {
           //         Icons.monetization_on_outlined,
           //         AppColors.gold,
           //       ),
-                
+
           //       // Đường kẻ dọc ngăn cách
           //       Container(width: 1, height: 40, color: AppColors.textMuted.withOpacity(0.3)),
-                
+
           //       // Phim đã xem (Màu Neon Blue - Công nghệ/Màn hình)
           //       _buildStatItem(
           //         "Phim đã xem",
@@ -153,14 +153,20 @@ class UserMembershipCard extends StatelessWidget {
               radius: 45,
               backgroundColor: AppColors.bgElevated,
               backgroundImage: (user.anhURL != null && user.anhURL!.isNotEmpty)
-                  ? NetworkImage(user.anhURL!)
+                  ? (user.anhURL!.startsWith('assets/')
+                        ? AssetImage(user.anhURL!) as ImageProvider
+                        : NetworkImage(user.anhURL!))
                   : null,
               child: (user.anhURL == null || user.anhURL!.isEmpty)
-                  ? const Icon(Icons.person, size: 40, color: AppColors.textMuted)
+                  ? const Icon(
+                      Icons.person,
+                      size: 40,
+                      color: AppColors.textMuted,
+                    )
                   : null,
             ),
           ),
-          
+
           // Nút Edit
           Positioned(
             bottom: 0,
@@ -172,7 +178,10 @@ class UserMembershipCard extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: AppColors.bgSecondary, // Nền nút tối
                   shape: BoxShape.circle,
-                  border: Border.all(color: AppColors.gold, width: 1.5), // Viền nút Gold
+                  border: Border.all(
+                    color: AppColors.gold,
+                    width: 1.5,
+                  ), // Viền nút Gold
                 ),
                 child: const Icon(
                   Icons.edit,
@@ -188,7 +197,12 @@ class UserMembershipCard extends StatelessWidget {
   }
 
   // Item thống kê
-  Widget _buildStatItem(String label, String value, IconData icon, Color color) {
+  Widget _buildStatItem(
+    String label,
+    String value,
+    IconData icon,
+    Color color,
+  ) {
     return Expanded(
       child: Column(
         children: [

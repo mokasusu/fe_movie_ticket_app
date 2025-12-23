@@ -74,6 +74,16 @@ class _InvoiceHistoryScreenState extends State<InvoiceHistoryScreen> {
         .join(", ");
     if (danhSachGhe.isEmpty) danhSachGhe = "Chưa chọn ghế";
 
+    // Thông tin suất chiếu bổ sung
+    String tenPhim = invoice.tenPhim ?? "Không rõ tên phim";
+    String tenRap = invoice.tenRap.isNotEmpty ? invoice.tenRap : "Không rõ rạp";
+    String tenPhong = invoice.tenPhong.isNotEmpty
+        ? invoice.tenPhong
+        : "Không rõ phòng";
+    String gioChieu = invoice.tgBatDau != null
+        ? dateFormat.format(invoice.tgBatDau!)
+        : "N/A";
+
     return GestureDetector(
       onTap: () {
         showInvoiceDetailPopup(context, invoice);
@@ -94,7 +104,7 @@ class _InvoiceHistoryScreenState extends State<InvoiceHistoryScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    invoice.tenSuatChieu ?? "Không rõ tên phim",
+                    tenPhim,
                     style: const TextStyle(
                       color: AppColors.textPrimary,
                       fontWeight: FontWeight.bold,
@@ -102,6 +112,22 @@ class _InvoiceHistoryScreenState extends State<InvoiceHistoryScreen> {
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    "Rạp: $tenRap | Phòng: $tenPhong",
+                    style: const TextStyle(
+                      color: AppColors.textSecondary,
+                      fontSize: 13,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    "Giờ chiếu: $gioChieu",
+                    style: const TextStyle(
+                      color: AppColors.textSecondary,
+                      fontSize: 13,
+                    ),
                   ),
                   const SizedBox(height: 6),
 

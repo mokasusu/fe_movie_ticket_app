@@ -1,5 +1,3 @@
-import 'food.dart';
-
 class InvoiceRequest {
   final String maUser;
   final int maSuatChieu; // Java Long -> Dart int

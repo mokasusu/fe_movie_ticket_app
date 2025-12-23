@@ -2,7 +2,6 @@ import 'package:home/models/food.dart';
 
 import '../../models/voucher.dart';
 import '../../models/seat.dart';
-import '../../models/invoice_request.dart';
 // chứa các hàm sử dụng lại trong toàn bộ ứng dụng
 
 bool isSameDate(DateTime a, DateTime b) {
@@ -15,10 +14,7 @@ int TotalSeatPrice(int seatCount, int seatPrice) {
 
 // Hàm tính toán giá tiền
 class PriceCalculator {
-  // ==========================================
-  // 1. TÍNH TỔNG TIỀN CÁC MỤC (Ghế & Đồ ăn)
-  // ==========================================
-
+  // 1. TÍNH TỔNG TIỀN TRƯỚC KHI GIẢM GIÁ (Subtotal)
   /// Tính tổng tiền ghế
   static double calcSeatTotal(List<Seat> seats) {
     // Cộng dồn giá của tất cả ghế trong list

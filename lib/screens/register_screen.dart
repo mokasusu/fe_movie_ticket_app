@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../models/userRequest.dart';
 import '../services/api/user_service.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -123,10 +124,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
       "gioiTinh": _selectedGender ?? '',
       "ngaySinh": _ngaySinhController.text.trim(),
       "email": _emailController.text,
-      "matKhau": _matKhauController.text, // mặc định rỗng
+      "matKhau": _matKhauController.text,
     };
 
     final success = await UserService.registerUser(userData);
+
+    // Nếu đăng ký thành công, tự động cập nhật avatar mặc định
+    if (success) {
+
+      final user = await UserService.getMyInfo();
+
+      if (user != null) {
+        await UserService.updateUserProfile(
+          user.id,
+          UserRequest(
+            hoTen: user.hoTen,
+            gioiTinh: user.gioiTinh,
+            ngaySinh: DateTime.parse(user.ngaySinh),
+            anhURL: 'assets/images/avatar/default_avt.jpg',
+          ),
+        );
+      }
+    }
 
     setState(() => isLoading = false);
 

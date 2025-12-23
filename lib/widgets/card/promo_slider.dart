@@ -18,10 +18,7 @@ class _PromotionsSliderState extends State<PromotionsSlider> {
   @override
   void initState() {
     super.initState();
-    _pageController = PageController(
-      initialPage: 0,
-      viewportFraction: 1.0,
-    );
+    _pageController = PageController(initialPage: 0, viewportFraction: 1.0);
   }
 
   @override
@@ -57,39 +54,38 @@ class _PromotionsSliderState extends State<PromotionsSlider> {
                     debugPrint('Clicked on: ${promo.title}');
                   },
                   child: Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 10),
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          AppColors.bgSecondary,
-                          AppColors.bgElevated,
-                        ],
-                      ),
-                    ),
-                    padding: const EdgeInsets.all(18.0),
-                    alignment: Alignment.centerLeft,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Icon(
-                          Icons.movie_filter,
-                          color: AppColors.gold,
-                          size: 28,
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          promo.title,
-                          style: const TextStyle(
-                            color: AppColors.textPrimary,
-                            fontWeight: FontWeight.w900,
-                            fontSize: 18,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 4),
                         ),
                       ],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image.asset(
+                        promo.imagePath,
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            color: AppColors.bgSecondary,
+                            child: Center(
+                              child: Text(
+                                promo.title,
+                                style: const TextStyle(
+                                  color: AppColors.textPrimary,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
                     ),
                   ),
                 );
@@ -110,9 +106,7 @@ class _PromotionsSliderState extends State<PromotionsSlider> {
                 width: isActive ? 12 : 8,
                 height: isActive ? 12 : 8,
                 decoration: BoxDecoration(
-                  color: isActive
-                      ? AppColors.gold
-                      : AppColors.textMuted,
+                  color: isActive ? AppColors.gold : AppColors.textMuted,
                   shape: BoxShape.circle,
                 ),
               );

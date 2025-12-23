@@ -41,32 +41,36 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       setState(() => _errorMessage = "Mật khẩu xác nhận không khớp");
       return;
     }
-    
+
     setState(() {
       _errorMessage = null;
       _isLoading = true;
     });
 
-    // try {
-    //   // API đổi mật khẩu
-    //   bool success = await UserService.changePassword(
-    //     currentPassword: _currentPassController.text,
-    //     newPassword: _newPassController.text,
-    //   );
-    //   await Future.delayed(const Duration(seconds: 2));
+    // Lấy userId từ API
+    final user = await UserService.getMyInfo();
+    if (user == null || user.id.isEmpty) {
+      setState(() {
+        _isLoading = false;
+        _errorMessage = "Không thể xác định tài khoản người dùng.";
+      });
+      return;
+    }
 
-    //   if (!mounted) return;
-
-    //   if (success) {
-    //     _showSuccessDialog();
-    //   } else {
-    //     setState(() => _errorMessage = "Mật khẩu hiện tại không đúng");
-    //   }
-    // } catch (e) {
-    //   setState(() => _errorMessage = "Lỗi kết nối: $e");
-    // } finally {
-    //   if (mounted) setState(() => _isLoading = false);
-    // }
+    // 2. Gọi API đổi mật khẩu
+    final success = await UserService.changePassword(
+      user.id,
+      _currentPassController.text,
+      _newPassController.text,
+    );
+    setState(() => _isLoading = false);
+    if (success) {
+      _showSuccessDialog();
+    } else {
+      setState(
+        () => _errorMessage = "Đổi mật khẩu thất bại. Kiểm tra lại thông tin!",
+      );
+    }
   }
 
   void _showSuccessDialog() {
@@ -75,17 +79,24 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       barrierDismissible: false,
       builder: (context) => AlertDialog(
         backgroundColor: AppColors.bgSecondary,
-        title: const Text("Thành công", style: TextStyle(color: AppColors.textPrimary)),
-        content: const Text("Mật khẩu đã được cập nhật. Vui lòng đăng nhập lại.", 
-          style: TextStyle(color: AppColors.textSecondary)),
+        title: const Text(
+          "Thành công",
+          style: TextStyle(color: AppColors.textPrimary),
+        ),
+        content: const Text(
+          "Mật khẩu đã được cập nhật.",
+          style: TextStyle(color: AppColors.textSecondary),
+        ),
         actions: [
           TextButton(
             onPressed: () {
-              // TODO: Điều hướng về trang Login
               Navigator.of(context).pop(); // Đóng dialog
-              Navigator.of(context).pop(); // Đóng màn hình đổi pass
+              Navigator.of(context).pop(); // Quay về màn hình trước
             },
-            child: const Text("Đồng ý", style: TextStyle(color: AppColors.gold)),
+            child: const Text(
+              "Đồng ý",
+              style: TextStyle(color: AppColors.gold),
+            ),
           ),
         ],
       ),
@@ -103,7 +114,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           icon: const Icon(Icons.arrow_back_ios, color: AppColors.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text("Đổi mật khẩu", style: TextStyle(color: AppColors.textPrimary)),
+        title: const Text(
+          "Đổi mật khẩu",
+          style: TextStyle(color: AppColors.textPrimary),
+        ),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -111,10 +125,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              "Tạo mật khẩu mới cho tài khoản của bạn để bảo mật tốt hơn.",
-              style: TextStyle(color: AppColors.textMuted, fontSize: 14),
-            ),
             const SizedBox(height: 30),
 
             // --- FORM INPUT ---
@@ -122,23 +132,26 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               label: "Mật khẩu hiện tại",
               controller: _currentPassController,
               obscureText: _obscureCurrent,
-              onToggleVisibility: () => setState(() => _obscureCurrent = !_obscureCurrent),
+              onToggleVisibility: () =>
+                  setState(() => _obscureCurrent = !_obscureCurrent),
             ),
             const SizedBox(height: 20),
-            
+
             _buildPasswordField(
               label: "Mật khẩu mới",
               controller: _newPassController,
               obscureText: _obscureNew,
-              onToggleVisibility: () => setState(() => _obscureNew = !_obscureNew),
+              onToggleVisibility: () =>
+                  setState(() => _obscureNew = !_obscureNew),
             ),
             const SizedBox(height: 20),
-            
+
             _buildPasswordField(
               label: "Xác nhận mật khẩu mới",
               controller: _confirmPassController,
               obscureText: _obscureConfirm,
-              onToggleVisibility: () => setState(() => _obscureConfirm = !_obscureConfirm),
+              onToggleVisibility: () =>
+                  setState(() => _obscureConfirm = !_obscureConfirm),
             ),
 
             // --- HIỂN THỊ LỖI ---
@@ -147,12 +160,19 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 padding: const EdgeInsets.only(top: 15),
                 child: Row(
                   children: [
-                    const Icon(Icons.error_outline, color: AppColors.red, size: 16),
+                    const Icon(
+                      Icons.error_outline,
+                      color: AppColors.red,
+                      size: 16,
+                    ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         _errorMessage!,
-                        style: const TextStyle(color: AppColors.red, fontSize: 13),
+                        style: const TextStyle(
+                          color: AppColors.red,
+                          fontSize: 13,
+                        ),
                       ),
                     ),
                   ],
@@ -169,18 +189,28 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 onPressed: _isLoading ? null : _handleSubmit,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.gold, // Màu chủ đạo
-                  foregroundColor: Colors.black,   // Chữ đen trên nền vàng cho dễ đọc
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  foregroundColor:
+                      Colors.black, // Chữ đen trên nền vàng cho dễ đọc
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                   elevation: 5,
                 ),
                 child: _isLoading
                     ? const SizedBox(
-                        height: 20, width: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.black),
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.black,
+                        ),
                       )
                     : const Text(
                         "Cập nhật mật khẩu",
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
               ),
             ),
@@ -219,14 +249,20 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             fillColor: AppColors.bgSecondary, // Nền input tối hơn nền chính
             hintText: "••••••••",
             hintStyle: TextStyle(color: AppColors.textMuted.withOpacity(0.5)),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 14,
+            ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide.none,
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.gold, width: 1), // Viền vàng khi focus
+              borderSide: const BorderSide(
+                color: AppColors.gold,
+                width: 1,
+              ), // Viền vàng khi focus
             ),
             suffixIcon: IconButton(
               icon: Icon(

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../../screens/home/home_screen.dart';
 import '../../screens/cinema/cinema_list_screen.dart';
 import '../../screens/voucher/voucher_list_screen.dart';
+import '../../screens/news/news_list_screen.dart';
+import '../../screens/more/more_screen.dart';
 import '../../theme/colors.dart';
 
 class BottomNavBar extends StatefulWidget {
@@ -18,8 +20,8 @@ class _BottomNavBarState extends State<BottomNavBar> {
     HomeScreen(),
     CinemaListScreen(),
     const VoucherListScreen(showBackButton: false),
-    const Center(child: Text("Notifications")),
-    const Center(child: Text("More")),
+    const NewsListScreen(),
+    const MoreScreen(),
   ];
 
   @override
@@ -53,10 +55,12 @@ class _BottomNavBarState extends State<BottomNavBar> {
             label: "Voucher",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.notifications),
-            label: "Thông báo",
+            icon: Icon(Icons.article),
+            label: "Tin tức"),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.list),
+            label: "Khác"
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.list), label: "Khác"),
         ],
       ),
     );

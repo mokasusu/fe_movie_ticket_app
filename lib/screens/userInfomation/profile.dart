@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../theme/colors.dart';
 import '../../models/user.dart';
+import '../../models/userRequest.dart';
 import '../../services/api/user_service.dart';
 import '../../services/auth/auth_service.dart';
 
@@ -102,6 +103,135 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     );
   }
 
+  /// Hiển thị popup chọn avatar
+  void _showAvatarPickerDialog(User user) {
+    final List<String> avatarPaths = [
+      'assets/avatar/default_avt.jpg',
+      'assets/avatar/avt1.jpg',
+      'assets/avatar/avt2.jpg',
+      'assets/avatar/avt3.jpg',
+      'assets/avatar/avt4.jpg',
+      'assets/avatar/avt5.jpg',
+      'assets/avatar/avt6.jpg',
+    ];
+
+    String? selectedAvatar = user.anhURL;
+
+    showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (context, setStateDialog) {
+          return AlertDialog(
+            backgroundColor: AppColors.bgSecondary,
+            title: const Text(
+              "Chọn Avatar",
+              style: TextStyle(color: AppColors.textPrimary),
+            ),
+            content: SizedBox(
+              width: double.maxFinite,
+              child: GridView.builder(
+                shrinkWrap: true,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
+                ),
+                itemCount: avatarPaths.length,
+                itemBuilder: (context, index) {
+                  final avatarPath = avatarPaths[index];
+                  final isSelected = selectedAvatar == avatarPath;
+
+                  return GestureDetector(
+                    onTap: () {
+                      setStateDialog(() {
+                        selectedAvatar = avatarPath;
+                      });
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: isSelected
+                              ? AppColors.gold
+                              : Colors.transparent,
+                          width: 3,
+                        ),
+                      ),
+                      child: CircleAvatar(
+                        backgroundImage: AssetImage(avatarPath),
+                        backgroundColor: AppColors.bgElevated,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text(
+                  "Hủy",
+                  style: TextStyle(color: AppColors.textMuted),
+                ),
+              ),
+              TextButton(
+                onPressed: () async {
+                  Navigator.pop(ctx);
+                  if (selectedAvatar != null) {
+                    await _updateAvatar(user, selectedAvatar!);
+                  }
+                },
+                child: const Text(
+                  "Xác nhận",
+                  style: TextStyle(color: AppColors.gold),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  /// Cập nhật avatar cho user
+  Future<void> _updateAvatar(User user, String avatarPath) async {
+    try {
+      final success = await UserService.updateUserProfile(
+        user.id,
+        UserRequest(
+          hoTen: user.hoTen,
+          gioiTinh: user.gioiTinh,
+          ngaySinh: DateTime.parse(user.ngaySinh),
+          anhURL: avatarPath,
+        ),
+      );
+
+      if (!mounted) return;
+
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Cập nhật avatar thành công!"),
+            backgroundColor: Colors.green,
+          ),
+        );
+        _loadData();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Cập nhật avatar thất bại!"),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Lỗi: $e"), backgroundColor: Colors.red),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -113,18 +243,17 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         foregroundColor: AppColors.textPrimary,
         elevation: 0,
         actions: [
-          // Nút refresh nhỏ trên appbar
           IconButton(icon: const Icon(Icons.refresh), onPressed: _loadData),
         ],
       ),
       body: RefreshIndicator(
-        onRefresh: _loadData, // Kéo xuống để refresh
+        onRefresh: _loadData,
         color: AppColors.gold,
         backgroundColor: AppColors.bgElevated,
         child: FutureBuilder<User?>(
           future: _userFuture,
           builder: (context, snapshot) {
-            // 1. Đang tải
+
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(
                 child: CircularProgressIndicator(color: AppColors.gold),
@@ -178,7 +307,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                   // --- WIDGET 1: THẺ THÀNH VIÊN ---
                   UserMembershipCard(
                     user: user,
-                    onEditAvatarPress: () => _navigateToEditProfile(user),
+                    onEditAvatarPress: () => _showAvatarPickerDialog(user),
                   ),
 
                   const SizedBox(height: 30),

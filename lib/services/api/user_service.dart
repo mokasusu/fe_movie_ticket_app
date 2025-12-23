@@ -1,19 +1,17 @@
 import 'package:dio/dio.dart';
 import '../../api/dio_client.dart';
-// ⚠️ Đừng quên import Model User của bạn ở đây
+
 import '../../models/user.dart';
+import '../../models/userRequest.dart';
 
 class UserService {
-  // Base endpoint cho user
-  static const String _endpoint = "/users";
 
+  static const String _endpoint = "/users";
+  
   /// 1. Đăng ký người dùng mới
   static Future<bool> registerUser(Map<String, dynamic> userData) async {
     try {
-      final response = await DioClient.dio.post(
-        _endpoint,
-        data: userData,
-      );
+      final response = await DioClient.dio.post(_endpoint, data: userData);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         print("✅ Đăng ký thành công: ${response.data}");
@@ -21,10 +19,11 @@ class UserService {
       }
 
       return false;
-
     } on DioException catch (e) {
       if (e.response != null) {
-        print("🔥 Lỗi đăng ký (Server): ${e.response?.statusCode} - ${e.response?.data}");
+        print(
+          "🔥 Lỗi đăng ký (Server): ${e.response?.statusCode} - ${e.response?.data}",
+        );
       } else {
         print("🔥 Lỗi kết nối: ${e.message}");
       }
@@ -35,14 +34,12 @@ class UserService {
     }
   }
 
-  /// 2. Lấy thông tin người dùng hiện tại (Dựa trên Token)
+  /// 2. Lấy thông tin người dùng hiện tại
   static Future<User?> getMyInfo() async {
     try {
-      // Gọi GET /users/myInfo
       final response = await DioClient.dio.get("$_endpoint/myInfo");
 
       if (response.statusCode == 200) {
-        // Convert JSON thành Object User
         return User.fromJson(response.data);
       }
       return null;
@@ -53,47 +50,58 @@ class UserService {
   }
 
   /// 3. Cập nhật thông tin người dùng
-  /// [userId]: ID của user cần update
-  /// [updateData]: Map chứa các trường cần sửa (ví dụ: ten, sdt...)
-  static Future<bool> updateUser(String userId, Map<String, dynamic> updateData) async {
+  static Future<bool> updateUserProfile(
+    String userId,
+    UserRequest request,
+  ) async {
     try {
-      // Gọi PUT /users/{userId}
+      Map<String, dynamic> data = request.toJson();
+
       final response = await DioClient.dio.put(
         "$_endpoint/$userId",
-        data: updateData,
+        data: data,
       );
 
-      // Backend trả về 200 là thành công
-      return response.statusCode == 200;
-
+      if (response.statusCode == 200) {
+        print("✅ Cập nhật thành công!");
+        return true;
+      }
+      return false;
     } on DioException catch (e) {
-      print("❌ Lỗi cập nhật (Server): ${e.response?.statusCode} - ${e.message}");
+      print(
+        "❌ Lỗi cập nhật (Server): ${e.response?.statusCode} - ${e.message}",
+      );
+      if (e.response != null) {
+        print("Chi tiết lỗi: ${e.response?.data}");
+      }
       return false;
     } catch (e) {
       print("❌ Lỗi không xác định: $e");
       return false;
     }
   }
-  
+
   /// 4. Đổi mật khẩu
-  static Future<bool> changePassword(String currentPassword, String newPassword) async {
-    // try {
-    //   final response = await DioClient.dio.post(
-    //     "$_endpoint/changePassword",
-    //     data: {
-    //       "currentPassword": currentPassword,
-    //       "newPassword": newPassword,
-    //     },
-    //   );
+  static Future<bool> changePassword(
+    String userId,
+    String oldPassword,
+    String newPassword,
+  ) async {
+    try {
+      final response = await DioClient.dio.put(
+        "$_endpoint/$userId/password",
+        data: {"oldPassword": oldPassword, "newPassword": newPassword},
+      );
 
-    //   return response.statusCode == 200;
-
-    // } on DioException catch (e) {
-    //   print("❌ Lỗi đổi mật khẩu (Server): ${e.response?.statusCode} - ${e.message}");
-    //   return false;
-    // } catch (e) {
-    //   print("❌ Lỗi không xác định: $e");
+      return response.statusCode == 200;
+    } on DioException catch (e) {
+      print(
+        "❌ Lỗi đổi mật khẩu (Server): ${e.response?.statusCode} - ${e.message}",
+      );
       return false;
-    // }
+    } catch (e) {
+      print("❌ Lỗi không xác định: $e");
+      return false;
+    }
   }
 }

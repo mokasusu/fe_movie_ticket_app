@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import '../../theme/colors.dart';
 import '../../models/user.dart';
 import '../../services/api/user_service.dart';
+import '../../models/userRequest.dart';
 
 class EditProfileScreen extends StatefulWidget {
   final User user;
@@ -91,14 +92,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     setState(() => _isLoading = true);
 
-    // Chuẩn bị data
-    Map<String, dynamic> updateData = {
-      "hoTen": _nameController.text,
-      "gioiTinh": _selectedGender,
-      "ngaySinh": _dobController.text,
-    };
-
-    final success = await UserService.updateUser(widget.user.id, updateData);
+    // Gọi update, nếu trường nào rỗng thì lấy từ user hiện tại
+    final success = await UserService.updateUserProfile(
+      widget.user.id,
+      UserRequest.fromUserWithFallback(
+        user: widget.user,
+        hoTen: _nameController.text,
+        gioiTinh: _selectedGender ?? '',
+        ngaySinh: _dobController.text,
+        // Nếu có trường ảnh thì truyền thêm ở đây
+      ),
+    );
 
     setState(() => _isLoading = false);
 
@@ -152,7 +156,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ),
                   )
                 : const Text(
-                    "LƯU",
+                    "Lưu",
                     style: TextStyle(
                       color: AppColors.gold,
                       fontWeight: FontWeight.bold,

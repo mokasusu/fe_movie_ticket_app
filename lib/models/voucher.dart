@@ -1,6 +1,6 @@
 enum DiscountType {
   PERCENTAGE, // Giảm theo %
-  AMOUNT,     // Giảm theo số tiền cố định
+  AMOUNT, // Giảm theo số tiền cố định
 }
 
 // 2. Class Model
@@ -26,11 +26,21 @@ class Voucher {
   });
 
   factory Voucher.fromJson(Map<String, dynamic> json) {
+    final String? loaiGiamGiaStr = json['loaiGiamGia']
+        ?.toString()
+        .toUpperCase();
+
+    // Debug log để kiểm tra giá trị backend trả về
+    print(
+      '🔍 Voucher ${json['maGiamGia']}: loaiGiamGia = "$loaiGiamGiaStr", giaTriGiam = ${json['giaTriGiam']}',
+    );
+
     return Voucher(
       maGiamGia: json['maGiamGia'],
       moTa: json['moTa'],
       giaTriGiam: (json['giaTriGiam'] as num).toDouble(),
-      loaiGiamGia: json['loaiGiamGia'] == 'PERCENTAGE'
+      loaiGiamGia:
+          (loaiGiamGiaStr == 'PERCENTAGE' || loaiGiamGiaStr == 'PERCENT')
           ? DiscountType.PERCENTAGE
           : DiscountType.AMOUNT,
       ngayTao: json['ngayTao'] != null

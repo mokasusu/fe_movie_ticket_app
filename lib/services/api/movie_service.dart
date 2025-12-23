@@ -1,23 +1,22 @@
 import 'package:dio/dio.dart';
-import '../../models/film_model.dart'; // Đảm bảo đường dẫn import đúng model của bạn
-import '../../api/dio_client.dart'; // Import DioClient bạn đã tạo
+import '../../models/film_model.dart';
+import '../../api/dio_client.dart';
 
 class MovieService {
-  // Đường dẫn gốc cho phim (DioClient đã có base là .../mobile)
+
   static const String _movieEndpoint = "/films";
 
   /// Hàm chung để gọi API và parse dữ liệu
   static Future<List<FilmResponse>> _fetchData(String path) async {
     try {
-      // 1. Gọi API qua DioClient
-      // Không cần truyền header Authorization thủ công nữa vì AuthInterceptor đã tự làm việc đó.
+
       final response = await DioClient.dio.get(path);
 
       print("🔍 API ($path) trả về: ${response.data}");
       print("🔍 Kiểu dữ liệu: ${response.data.runtimeType}");
       // 2. Xử lý dữ liệu
       if (response.statusCode == 200) {
-        // Dio tự động convert JSON sang Map/List, không cần jsonDecode(response.body)
+        // Dio tự động convert JSON sang Map/List
         final List<dynamic> data = response.data;
         return data.map((json) => FilmResponse.fromJson(json)).toList();
       } else {

@@ -1,30 +1,36 @@
 class InvoiceResponse {
   final int? maHoaDon;
   final String? userName;
-  final String? tenSuatChieu;
+  final String? tenPhim;
   final double? tongTienTruocGiam;
   final double? soTienGiam;
   final double? tongTienSauGiam;
   final String? voucher;
   final DateTime? ngayTao;
+  final DateTime? tgBatDau;
+  final String tenRap;
+  final String tenPhong;
   final String? url;
-  
+
   // Danh sách chi tiết
   final List<InvoiceSeat> gheList;
   final List<InvoiceFood> doAnList;
 
   InvoiceResponse({
-    this.maHoaDon,
-    this.userName,
-    this.tenSuatChieu,
-    this.tongTienTruocGiam,
-    this.soTienGiam,
-    this.tongTienSauGiam,
-    this.voucher,
-    this.ngayTao,
+    required this.maHoaDon,
+    required this.userName,
+    required this.tenPhim,
+    required this.tongTienTruocGiam,
+    required this.soTienGiam,
+    required this.tongTienSauGiam,
+    required this.voucher,
+    required this.ngayTao,
+    required this.tgBatDau,
+    required this.tenRap,
+    required this.tenPhong,
     this.url,
-    this.gheList = const [],
-    this.doAnList = const [],
+    required this.gheList,
+    required this.doAnList,
   });
 
   double get tongTienGhe {
@@ -39,31 +45,39 @@ class InvoiceResponse {
     return InvoiceResponse(
       maHoaDon: json['maHoaDon'] as int?,
       userName: json['userName'] as String?,
-      tenSuatChieu: json['tenSuatChieu'] as String?,
-      
+      tenPhim: json['tenPhim'] as String?,
+
       // Sử dụng (as num?)?.toDouble() để an toàn nếu server trả về int thay vì double
       tongTienTruocGiam: (json['tongTienTruocGiam'] as num?)?.toDouble(),
       soTienGiam: (json['soTienGiam'] as num?)?.toDouble(),
       tongTienSauGiam: (json['tongTienSauGiam'] as num?)?.toDouble(),
-      
+
       voucher: json['voucher'] as String?,
-      
+
       // Parse ngày tháng
-      ngayTao: json['ngayTao'] != null 
-          ? DateTime.tryParse(json['ngayTao']) 
+      ngayTao: json['ngayTao'] != null
+          ? DateTime.tryParse(json['ngayTao'])
           : null,
-      
+      tgBatDau: json['tgBatDau'] != null
+          ? DateTime.tryParse(json['tgBatDau'])
+          : null,
+      tenRap: json['tenRap'] as String? ?? '',
+      tenPhong: json['tenPhong'] as String? ?? '',
       url: json['url'] as String?,
 
       // Map danh sách ghế
-      gheList: (json['gheList'] as List<dynamic>?)
+      gheList:
+          (json['gheList'] as List<dynamic>?)
               ?.map((e) => InvoiceSeat.fromJson(e))
-              .toList() ?? [],
+              .toList() ??
+          [],
 
       // Map danh sách đồ ăn
-      doAnList: (json['doAnList'] as List<dynamic>?)
+      doAnList:
+          (json['doAnList'] as List<dynamic>?)
               ?.map((e) => InvoiceFood.fromJson(e))
-              .toList() ?? [],
+              .toList() ??
+          [],
     );
   }
 }
@@ -73,11 +87,7 @@ class InvoiceSeat {
   final String? tenLoaiGhe;
   final double? gia;
 
-  InvoiceSeat({
-    this.maSeatType,
-    this.tenLoaiGhe,
-    this.gia,
-  });
+  InvoiceSeat({this.maSeatType, this.tenLoaiGhe, this.gia});
 
   factory InvoiceSeat.fromJson(Map<String, dynamic> json) {
     return InvoiceSeat(

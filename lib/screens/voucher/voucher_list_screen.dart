@@ -114,7 +114,7 @@ class _VoucherListScreenState extends State<VoucherListScreen> {
             indicatorWeight: 3,
             tabs: [
               Tab(text: "Hiện hành"),
-              Tab(text: "Lịch sử"),
+              Tab(text: "Hết hạn"),
             ],
           ),
         ),
@@ -257,6 +257,13 @@ class VoucherItemCard extends StatelessWidget {
         ? dateFormat.format(voucher.ngayHetHan!)
         : "Vô thời hạn";
 
+    String discountText;
+    if (voucher.loaiGiamGia == DiscountType.PERCENTAGE) {
+      discountText = "Giảm: ${voucher.giaTriGiam.toStringAsFixed(0)}%";
+    } else {
+      discountText = "Giảm: ${numberFormat.format(voucher.giaTriGiam)}";
+    }
+
     return InkWell(
       onTap: isActive ? onTap : null,
       borderRadius: BorderRadius.circular(10),
@@ -362,7 +369,7 @@ class VoucherItemCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      "Giảm: ${numberFormat.format(voucher.giaTriGiam)}",
+                      discountText,
                       style: TextStyle(
                         color: isActive ? AppColors.gold : AppColors.textMuted,
                         fontWeight: FontWeight.bold,

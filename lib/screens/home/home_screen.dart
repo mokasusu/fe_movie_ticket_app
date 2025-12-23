@@ -5,9 +5,28 @@ import '../../widgets/card/movie_card_slider.dart';
 import '../../widgets/card/coming_soon_slider.dart';
 import '../../theme/colors.dart';
 import '../../widgets/bottomBar/bottom_nav_bar.dart';
+import '../../models/promotion.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
+
+  static const List<Promotion> _promotions = [
+    Promotion(
+      title: 'Khuyến mãi 1',
+      color: AppColors.gold,
+      imagePath: 'assets/promotions/promotion1.png',
+    ),
+    Promotion(
+      title: 'Khuyến mãi 2',
+      color: AppColors.neonBlue,
+      imagePath: 'assets/promotions/promotion2.png',
+    ),
+    Promotion(
+      title: 'Khuyến mãi 3',
+      color: AppColors.red,
+      imagePath: 'assets/promotions/promotion3.png',
+    ),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -19,10 +38,11 @@ class HomeScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // PromotionsSlider(promotions: mockPromotions),
+            const SizedBox(height: 10),
+            PromotionsSlider(promotions: _promotions),
+            const SizedBox(height: 10),
             MovieCard(),
             ComingSoonSlider(),
-            //Tạo khoảng trống ở dưới cùng
             const SizedBox(height: 20),
           ],
         ),
