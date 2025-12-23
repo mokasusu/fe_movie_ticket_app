@@ -3,11 +3,11 @@ import 'package:intl/intl.dart';
 import '../../theme/colors.dart';
 import '../../models/invoice_response.dart';
 import '../../services/api/invoice_service.dart';
-import '../../services/api/user_service.dart';
 import '../../widgets/detail/invoice_detail.dart';
 
 class InvoiceHistoryScreen extends StatefulWidget {
-  const InvoiceHistoryScreen({super.key});
+  final String userId;
+  const InvoiceHistoryScreen({super.key, required this.userId});
 
   @override
   State<InvoiceHistoryScreen> createState() => _InvoiceHistoryScreenState();
@@ -24,17 +24,12 @@ class _InvoiceHistoryScreenState extends State<InvoiceHistoryScreen> {
   }
 
   Future<void> _fetchData() async {
-    final user = await UserService.getMyInfo();
-    if (user != null) {
-      final data = await InvoiceService.getInvoicesByUser(user.id);
-      // --------------------------------
-
-      if (mounted) {
-        setState(() {
-          _invoices = data;
-          _isLoading = false;
-        });
-      }
+    final data = await InvoiceService.getInvoicesByUser(widget.userId);
+    if (mounted) {
+      setState(() {
+        _invoices = data;
+        _isLoading = false;
+      });
     }
   }
 

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../theme/colors.dart';
 import '../../screens/userInfomation/profile.dart';
-import '../../screens/invoice/invoice_screen.dart';
+import '../../screens/userInfomation/invoice_screen.dart';
+import '../../services/api/user_service.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   const CustomAppBar({super.key});
@@ -15,13 +16,22 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   // Hàm xử lý khi nhấn nút Lịch sử Đặt vé
-  void _handleHistoryClick(BuildContext context) {
+  void _handleHistoryClick(BuildContext context) async {
+    // Lấy userId từ UserService
+    final user = await UserService.getMyInfo();
+    if (user == null || user.id == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Không lấy được thông tin người dùng!')),
+      );
+      return;
+    }
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const InvoiceHistoryScreen()),
+      MaterialPageRoute(
+        builder: (context) => InvoiceHistoryScreen(userId: user.id),
+      ),
     );
     print('Nút Lịch sử Đặt vé đã được nhấn!');
-    
   }
 
   // Chiều cao AppBar

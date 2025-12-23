@@ -19,10 +19,10 @@ class ProfileMenuOptions extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        // --- NHÓM 1: CÀI ĐẶT TÀI KHOẢN ---
+        //CÀI ĐẶT TÀI KHOẢN
         Container(
           decoration: BoxDecoration(
-            color: AppColors.bgSecondary, // Nền tối thứ cấp
+            color: AppColors.bgSecondary,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(color: AppColors.bgElevated, width: 1),
           ),
@@ -49,21 +49,21 @@ class ProfileMenuOptions extends StatelessWidget {
           ),
         ),
 
-        const SizedBox(height: 24), // Khoảng cách lớn trước nút đăng xuất
+        const SizedBox(height: 24),
 
-        // --- NHÓM 2: ĐĂNG XUẤT (NỔI BẬT) ---
+        // ĐĂNG XUẤT
         SizedBox(
           width: double.infinity,
           child: ElevatedButton.icon(
             onPressed: onLogoutTap,
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.bgElevated, // Nền tiệp màu app
-              foregroundColor: AppColors.red, // Chữ màu đỏ (Điểm nhấn)
+              backgroundColor: AppColors.bgElevated, 
+              foregroundColor: AppColors.red,
               padding: const EdgeInsets.symmetric(vertical: 16),
               elevation: 0,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
-                side: const BorderSide(color: AppColors.red, width: 1), // Viền đỏ
+                side: const BorderSide(color: AppColors.red, width: 1),
               ),
               // Hiệu ứng khi nhấn
               overlayColor: AppColors.red.withOpacity(0.1),
@@ -82,7 +82,6 @@ class ProfileMenuOptions extends StatelessWidget {
     );
   }
 
-  // Helper: Tạo từng dòng menu
   Widget _buildMenuItem({
     required IconData icon,
     required String title,
@@ -97,31 +96,30 @@ class ProfileMenuOptions extends StatelessWidget {
           color: AppColors.bgElevated,
           borderRadius: BorderRadius.circular(8),
         ),
-        child: Icon(icon, color: AppColors.gold, size: 20), // Icon màu Gold sang trọng
+        child: Icon(icon, color: AppColors.gold, size: 20),
       ),
       title: Text(
         title,
         style: const TextStyle(
-          color: AppColors.textPrimary, // Chữ trắng
+          color: AppColors.textPrimary,
           fontSize: 15,
           fontWeight: FontWeight.w500,
         ),
       ),
       trailing: const Icon(
         Icons.arrow_forward_ios_rounded,
-        color: AppColors.textMuted, // Mũi tên màu xám tối
+        color: AppColors.textMuted,
         size: 16,
       ),
     );
   }
 
-  // Helper: Đường kẻ ngăn cách
   Widget _buildDivider() {
     return const Divider(
       height: 1,
       thickness: 1,
       color: AppColors.bgElevated,
-      indent: 60, // Thụt vào khớp với text
+      indent: 60,
       endIndent: 20,
     );
   }

@@ -14,32 +14,38 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
-  // Controllers
   late TextEditingController _nameController;
-  late TextEditingController _phoneController;
   late TextEditingController _emailController;
-  late TextEditingController _addressController;
   late TextEditingController _dobController;
+  String? _selectedGender;
 
   bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    // Khởi tạo giá trị ban đầu từ User được truyền vào
-    _nameController = TextEditingController(text: widget.user.hoTen);
-    _emailController = TextEditingController(text: widget.user.email);
-    
-    // Format ngày sinh nếu có (Giả sử server trả về String)
-    _dobController = TextEditingController(text: widget.user.ngaySinh ?? "");
+    _nameController = TextEditingController();
+    _emailController = TextEditingController();
+    _dobController = TextEditingController();
+    _selectedGender = null;
+    _fetchUserInfo();
+  }
+
+  Future<void> _fetchUserInfo() async {
+    final user = await UserService.getMyInfo();
+    final u = user ?? widget.user;
+    setState(() {
+      _nameController.text = u.hoTen ?? "";
+      _emailController.text = u.email ?? "";
+      _dobController.text = u.ngaySinh ?? "";
+      _selectedGender = (u.gioiTinh.toLowerCase() == 'nam') ? 'Nam' : 'Nữ';
+    });
   }
 
   @override
   void dispose() {
     _nameController.dispose();
-    _phoneController.dispose();
     _emailController.dispose();
-    _addressController.dispose();
     _dobController.dispose();
     super.dispose();
   }
@@ -48,15 +54,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(), // Hoặc parse từ _dobController nếu cần kỹ hơn
+      initialDate: DateTime.now(),
       firstDate: DateTime(1950),
       lastDate: DateTime.now(),
       builder: (context, child) {
-        // Custom màu cho DatePicker hợp với Dark Theme
         return Theme(
+          //datetime picker
           data: Theme.of(context).copyWith(
             colorScheme: const ColorScheme.dark(
-              primary: AppColors.gold, // Màu chọn
+              primary: AppColors.gold,
               onPrimary: Colors.black,
               surface: AppColors.bgSecondary,
               onSurface: AppColors.textPrimary,
@@ -77,9 +83,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   // Hàm Lưu thay đổi
   Future<void> _handleSave() async {
     if (_nameController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Vui lòng nhập họ tên")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Vui lòng nhập họ tên")));
       return;
     }
 
@@ -88,14 +94,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     // Chuẩn bị data
     Map<String, dynamic> updateData = {
       "hoTen": _nameController.text,
-      "sdt": _phoneController.text,
-      "diaChi": _addressController.text,
+      "gioiTinh": _selectedGender,
       "ngaySinh": _dobController.text,
     };
 
-    // Gọi API (truyền ID của user hiện tại)
-    // Lưu ý: widget.user.id phải không null. Nếu null hãy check lại logic login.
-    final success = await UserService.updateUser(widget.user.id ?? "", updateData);
+    final success = await UserService.updateUser(widget.user.id, updateData);
 
     setState(() => _isLoading = false);
 
@@ -131,14 +134,31 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           icon: const Icon(Icons.close, color: AppColors.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text("Chỉnh sửa hồ sơ", style: TextStyle(color: AppColors.textPrimary)),
+        title: const Text(
+          "Chỉnh sửa hồ sơ",
+          style: TextStyle(color: AppColors.textPrimary),
+        ),
         centerTitle: true,
         actions: [
           TextButton(
             onPressed: _isLoading ? null : _handleSave,
             child: _isLoading
-                ? const SizedBox(width: 15, height: 15, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.gold))
-                : const Text("LƯU", style: TextStyle(color: AppColors.gold, fontWeight: FontWeight.bold, fontSize: 16)),
+                ? const SizedBox(
+                    width: 15,
+                    height: 15,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: AppColors.gold,
+                    ),
+                  )
+                : const Text(
+                    "LƯU",
+                    style: TextStyle(
+                      color: AppColors.gold,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
           ),
           const SizedBox(width: 8),
         ],
@@ -147,7 +167,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            
             const SizedBox(height: 30),
 
             // 1. Các trường thông tin
@@ -156,48 +175,62 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               controller: _nameController,
               icon: Icons.person_outline,
             ),
-            
+
             const SizedBox(height: 20),
-            
+
             // Email bị disable (Read-only)
             _buildTextField(
               label: "Email",
               controller: _emailController,
               icon: Icons.email_outlined,
-              isReadOnly: true, // Không cho sửa
+              isReadOnly: true,
             ),
-            
+
             const SizedBox(height: 20),
-            
-            _buildTextField(
-              label: "Số điện thoại",
-              controller: _phoneController,
-              icon: Icons.phone_android_outlined,
-              keyboardType: TextInputType.phone,
+
+            // Giới tính
+            Row(
+              children: [
+                const Icon(Icons.wc, color: AppColors.textSecondary),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: DropdownButtonFormField<String>(
+                    value: _selectedGender,
+                    decoration: const InputDecoration(
+                      labelText: "Giới tính",
+                      border: OutlineInputBorder(),
+                    ),
+                    items: const [
+                      DropdownMenuItem(value: 'Nam', child: Text('Nam')),
+                      DropdownMenuItem(value: 'Nữ', child: Text('Nữ')),
+                    ],
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedGender = value;
+                      });
+                    },
+                  ),
+                ),
+              ],
             ),
-            
+
             const SizedBox(height: 20),
-            
+
             // Ngày sinh (Bấm vào hiện lịch)
             GestureDetector(
               onTap: () => _selectDate(context),
-              child: AbsorbPointer( // Chặn bàn phím hiện lên
+              child: AbsorbPointer(
+                // Chặn bàn phím hiện lên
                 child: _buildTextField(
                   label: "Ngày sinh",
                   controller: _dobController,
                   icon: Icons.calendar_today_outlined,
-                  isReadOnly: false, // Vẫn cho bấm để mở DatePicker
+                  isReadOnly: false,
                 ),
               ),
             ),
-             
+
             const SizedBox(height: 20),
-            
-            _buildTextField(
-              label: "Địa chỉ",
-              controller: _addressController,
-              icon: Icons.location_on_outlined,
-            ),
           ],
         ),
       ),
@@ -229,12 +262,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           readOnly: isReadOnly,
           keyboardType: keyboardType,
           style: TextStyle(
-            color: isReadOnly ? AppColors.textMuted : AppColors.textPrimary, // Nếu readonly thì màu tối hơn
+            color: isReadOnly
+                ? AppColors.textMuted
+                : AppColors.textPrimary, // Nếu readonly thì màu tối hơn
           ),
           decoration: InputDecoration(
             filled: true,
             fillColor: AppColors.bgSecondary,
-            prefixIcon: Icon(icon, color: isReadOnly ? AppColors.disabled : AppColors.gold),
+            prefixIcon: Icon(
+              icon,
+              color: isReadOnly ? AppColors.disabled : AppColors.gold,
+            ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide.none,

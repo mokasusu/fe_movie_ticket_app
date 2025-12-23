@@ -22,6 +22,7 @@ import '../../widgets/pay/voucher_selector.dart';
 import '../../widgets/pay/qr_dialog.dart';
 import '../../widgets/pay/success_dialog.dart';
 import '../home/home_screen.dart';
+import '../userInfomation/invoice_screen.dart';
 
 class PayScreen extends StatefulWidget {
   final FilmResponse movie;
@@ -62,7 +63,7 @@ class _PayScreenState extends State<PayScreen> {
 
     // 3. Tạo request hóa đơn từ dữ liệu hiện tại
     final invoiceRequest = InvoiceRequest(
-      maUser: user.id, // Truyền đúng userId lấy từ API
+      maUser: user.id,
       maSuatChieu: widget.showtime.id,
       voucherId: _selectedVoucher?.maGiamGia,
       gheList: widget.seatNumbers
@@ -79,8 +80,13 @@ class _PayScreenState extends State<PayScreen> {
         context: context,
         builder: (context) => PaymentSuccessDialog(
           onViewTicket: () {
-            // TODO: Xử lý xem vé
-            Navigator.pop(context);
+            Navigator.pop(context); // Đóng dialog trước khi điều hướng
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => InvoiceHistoryScreen(userId: user.id ?? ""),
+              ),
+            );
           },
           onBackToHome: () {
             // Đóng dialog và chuyển về HomeScreen

@@ -9,7 +9,7 @@ import '../../widgets/user/user_membership.dart';
 import '../../widgets/user/options.dart';
 
 // Import các màn hình con (để điều hướng)
-import 'update_info.dart';
+import 'edit_info.dart';
 import 'change_password.dart';
 import '../login_screen.dart';
 
@@ -181,7 +181,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
 
                   const SizedBox(height: 40),
 
-                  // --- FOOTER (Phiên bản app) ---
+                  
                   const Text(
                     "Version 1.0.0",
                     style: TextStyle(color: AppColors.textMuted, fontSize: 12),

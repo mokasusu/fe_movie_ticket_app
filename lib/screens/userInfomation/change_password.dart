@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../theme/colors.dart';
-import '../../services/api/user_service.dart'; // Import service để gọi API
+import '../../services/api/user_service.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   const ChangePasswordScreen({super.key});
@@ -15,7 +15,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   final _newPassController = TextEditingController();
   final _confirmPassController = TextEditingController();
 
-  // Trạng thái ẩn/hiện mật khẩu
   bool _obscureCurrent = true;
   bool _obscureNew = true;
   bool _obscureConfirm = true;
@@ -44,33 +43,30 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     }
     
     setState(() {
-      _errorMessage = null; // Xóa lỗi cũ
+      _errorMessage = null;
       _isLoading = true;
     });
 
-    try {
-      // 2. Gọi API (Ví dụ)
-      // final success = await UserService.changePassword(
-      //   _currentPassController.text,
-      //   _newPassController.text
-      // );
-      
-      // Giả lập delay mạng để test UI
-      await Future.delayed(const Duration(seconds: 2));
-      bool success = true; // Giả sử thành công
+    // try {
+    //   // API đổi mật khẩu
+    //   bool success = await UserService.changePassword(
+    //     currentPassword: _currentPassController.text,
+    //     newPassword: _newPassController.text,
+    //   );
+    //   await Future.delayed(const Duration(seconds: 2));
 
-      if (!mounted) return;
+    //   if (!mounted) return;
 
-      if (success) {
-        _showSuccessDialog();
-      } else {
-        setState(() => _errorMessage = "Mật khẩu hiện tại không đúng");
-      }
-    } catch (e) {
-      setState(() => _errorMessage = "Lỗi kết nối: $e");
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
-    }
+    //   if (success) {
+    //     _showSuccessDialog();
+    //   } else {
+    //     setState(() => _errorMessage = "Mật khẩu hiện tại không đúng");
+    //   }
+    // } catch (e) {
+    //   setState(() => _errorMessage = "Lỗi kết nối: $e");
+    // } finally {
+    //   if (mounted) setState(() => _isLoading = false);
+    // }
   }
 
   void _showSuccessDialog() {
