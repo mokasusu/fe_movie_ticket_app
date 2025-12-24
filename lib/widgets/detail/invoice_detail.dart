@@ -116,6 +116,7 @@ class InvoiceReceiptWidget extends StatelessWidget {
                           ? dateFormat.format(invoice.ngayTao!)
                           : "N/A",
                     ),
+                    // _buildRow("Gmail", invoice.userEmail ?? ""),
                     const SizedBox(height: 10),
 
                     // --- THÔNG TIN SUẤT CHIẾU ---
@@ -228,6 +229,25 @@ class InvoiceReceiptWidget extends StatelessWidget {
                     const SizedBox(height: 10),
 
                     // --- TỔNG TIỀN ---
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          "Tạm tính",
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 18,
+                          ),
+                        ),
+                        Text(
+                          currencyFormat.format(invoice.tongTienTruocGiam ?? 0),
+                          style: const TextStyle(
+                            fontSize: 18,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
                     _buildRow(
                       "Giảm giá",
                       currencyFormat.format(invoice.tongTienTruocGiam ?? 0),
