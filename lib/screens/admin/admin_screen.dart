@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../../utils/storage.dart';
 import '../login_screen.dart';
 import '../admin/ShowtimeManagementScreen.dart';
+import '../admin/voucher_screens/voucher_admin_screen.dart';
+import '../admin/revenue_screen.dart';
 
 class AdminHomeScreen extends StatelessWidget {
   const AdminHomeScreen({super.key});
@@ -59,10 +61,20 @@ class AdminHomeScreen extends StatelessWidget {
                       MaterialPageRoute(builder: (context) => const ShowtimeManagementScreen()),
                     );
                   }),
-                  _buildMenuCard(Icons.confirmation_number, "Quản lý Vé", Colors.green, () {}),
-                  _buildMenuCard(Icons.people, "Người dùng", Colors.purple, () {}),
-                  _buildMenuCard(Icons.bar_chart, "Doanh thu", Colors.redAccent, () {}),
-                  _buildMenuCard(Icons.settings, "Cài đặt", Colors.grey, () {}),
+                  _buildMenuCard(Icons.confirmation_number, "Quản lý Voucher", Colors.green, () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const VoucherAdminScreen()),
+                    );
+                  }),
+                  // _buildMenuCard(Icons.people, "Người dùng", Colors.purple, () {}),
+                  _buildMenuCard(Icons.bar_chart, "Doanh thu", Colors.redAccent, () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const RevenueScreen()),
+                    );
+                  }),
+                  // _buildMenuCard(Icons.settings, "Cài đặt", Colors.grey, () {}),
                 ],
               ),
             ),

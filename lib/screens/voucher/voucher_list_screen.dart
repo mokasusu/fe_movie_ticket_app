@@ -53,7 +53,9 @@ class _VoucherListScreenState extends State<VoucherListScreen> {
 
   // Logic khi bấm vào 1 dòng voucher
   void _handleItemTap(Voucher voucher) {
-    if (voucher.trangThai != true || voucher.isExpired) return;
+    if (voucher.trangThai != true ||
+        voucher.isExpired ||
+        voucher.soLuong <= 0) return;
 
     setState(() {
       // Nếu bấm vào cái đang chọn -> Bỏ chọn
@@ -249,8 +251,15 @@ class VoucherItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool isActive =
-        !isHistoryMode && voucher.trangThai == true && !voucher.isExpired;
+    // Kiểm tra xem có hết số lượng không
+    final bool isOutOfStock = !isHistoryMode && voucher.soLuong <= 0;
+
+    // Active khi: không phải lịch sử, trạng thái ok, chưa hết hạn VÀ còn số lượng
+    final bool isActive = !isHistoryMode &&
+        voucher.trangThai == true &&
+        !voucher.isExpired &&
+        !isOutOfStock;
+
     final numberFormat = NumberFormat.currency(locale: 'vi_VN', symbol: 'đ');
     final dateFormat = DateFormat('dd/MM/yyyy');
     String formattedDate = voucher.ngayHetHan != null
@@ -315,7 +324,9 @@ class VoucherItemCard extends StatelessWidget {
                   Text(
                     isHistoryMode
                         ? "HẾT HẠN"
-                        : (isSelected ? "ĐÃ CHỌN" : "VOUCHER"),
+                        : (isSelected
+                            ? "ĐÃ CHỌN"
+                            : (isOutOfStock ? "HẾT SL" : "VOUCHER")),
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 10,
@@ -393,6 +404,18 @@ class VoucherItemCard extends StatelessWidget {
                             fontSize: 12,
                             fontStyle: FontStyle.italic,
                             color: AppColors.textMuted,
+                          ),
+                        ),
+                      ),
+                    if (isOutOfStock)
+                      const Padding(
+                        padding: EdgeInsets.only(top: 4),
+                        child: Text(
+                          "Đã hết số lượng",
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontStyle: FontStyle.italic,
+                            color: Colors.redAccent,
                           ),
                         ),
                       ),
