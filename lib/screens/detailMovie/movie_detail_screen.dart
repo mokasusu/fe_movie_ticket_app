@@ -67,8 +67,10 @@ class MovieDetailPage extends StatelessWidget {
                     child: CircleAvatar(
                       backgroundColor: Colors.black.withOpacity(0.45),
                       child: IconButton(
-                        icon: const Icon(Icons.arrow_back,
-                            color: AppColors.textPrimary),
+                        icon: const Icon(
+                          Icons.arrow_back,
+                          color: AppColors.textPrimary,
+                        ),
                         onPressed: () => Navigator.pop(context),
                       ),
                     ),
@@ -83,7 +85,8 @@ class MovieDetailPage extends StatelessWidget {
                       child: GestureDetector(
                         onTap: () {
                           if (movie.trailerUrl == null ||
-                              movie.trailerUrl!.isEmpty) return;
+                              movie.trailerUrl!.isEmpty)
+                            return;
 
                           _showTrailerDialog(context, movie.trailerUrl!);
                         },
@@ -123,12 +126,16 @@ class MovieDetailPage extends StatelessWidget {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(12),
                         child: _isValidUrl(movie.anhPosterDoc)
-                            ? Image.network(movie.anhPosterDoc!,
-                                fit: BoxFit.cover)
+                            ? Image.network(
+                                movie.anhPosterDoc!,
+                                fit: BoxFit.cover,
+                              )
                             : const Center(
-                                child: Icon(Icons.movie,
-                                    size: 70,
-                                    color: AppColors.textMuted),
+                                child: Icon(
+                                  Icons.movie,
+                                  size: 70,
+                                  color: AppColors.textMuted,
+                                ),
                               ),
                       ),
                     ),
@@ -158,9 +165,9 @@ class MovieDetailPage extends StatelessWidget {
                         Text(
                           movie.genres.join(", "),
                           style: const TextStyle(
-                          color: AppColors.textSecondary,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
+                            color: AppColors.textSecondary,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
                           ),
                         ),
                       ],
@@ -178,8 +185,10 @@ class MovieDetailPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _infoRow("Thời lượng",
-                      movie.thoiLuong == null ? "" : "${movie.thoiLuong} phút"),
+                  _infoRow(
+                    "Thời lượng",
+                    movie.thoiLuong == null ? "" : "${movie.thoiLuong} phút",
+                  ),
                   _infoRow("Đạo diễn", movie.daoDien),
                   _infoRow(
                     "Diễn viên",
@@ -187,10 +196,16 @@ class MovieDetailPage extends StatelessWidget {
                         ? ""
                         : movie.dienVien!,
                   ),
-                  _infoRow("Ngày công chiếu", movie.ngayCongChieu.toString()),
                   _infoRow(
-                      "Độ tuổi",
-                      movie.doTuoi == null ? "" : "${movie.doTuoi}+"),
+                    "Ngày công chiếu",
+                    movie.ngayCongChieu != null
+                        ? "${movie.ngayCongChieu!.day.toString().padLeft(2, '0')}/${movie.ngayCongChieu!.month.toString().padLeft(2, '0')}/${movie.ngayCongChieu!.year}"
+                        : "",
+                  ),
+                  _infoRow(
+                    "Độ tuổi",
+                    movie.doTuoi == null ? "" : "${movie.doTuoi}+",
+                  ),
                   const SizedBox(height: 20),
                   Text(
                     movie.moTa,

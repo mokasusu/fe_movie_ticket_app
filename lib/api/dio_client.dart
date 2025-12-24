@@ -8,7 +8,7 @@ class DioClient {
     // } else {
     //   return "http://10.0.2.2:6969"; // Chạy trên Máy ảo Android
     // }
-    return "https://cinemode-2.onrender.com/mobile";
+    return "https://cinemode.onrender.com/mobile";
   }
 
   static final Dio dio = Dio(
