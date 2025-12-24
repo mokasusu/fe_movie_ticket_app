@@ -8,14 +8,14 @@ class DioClient {
     // } else {
     //   return "http://10.0.2.2:6969"; // Chạy trên Máy ảo Android
     // }
-    return "http://10.0.2.2:6969/mobile";
+    return "https://cinemode-2.onrender.com/mobile";
   }
 
   static final Dio dio = Dio(
     BaseOptions(
       baseUrl: _baseUrl, // 3. Gán biến vào đây
-      connectTimeout: const Duration(seconds: 10),
-      receiveTimeout: const Duration(seconds: 10),
+      connectTimeout: const Duration(seconds: 60),
+      receiveTimeout: const Duration(seconds: 60),
       headers: {
         "Content-Type": "application/json", // định dạng chuẩn
       },

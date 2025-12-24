@@ -22,14 +22,12 @@ class UserMembershipCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 10),
       decoration: BoxDecoration(
-        // Màu nền Gradient tối theo theme
         gradient: const LinearGradient(
           colors: [AppColors.bgSecondary, AppColors.bgElevated],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(20),
-        // Viền Gold tạo cảm giác VIP
         border: Border.all(color: AppColors.gold.withOpacity(0.5), width: 1.5),
         boxShadow: [
           BoxShadow(
@@ -56,7 +54,7 @@ class UserMembershipCard extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary, // Màu trắng
+                    color: AppColors.textPrimary,
                     letterSpacing: 0.5,
                   ),
                 ),
@@ -65,7 +63,7 @@ class UserMembershipCard extends StatelessWidget {
                 Text(
                   user.email ?? "user@example.com",
                   style: const TextStyle(
-                    color: AppColors.textSecondary, // Màu xám
+                    color: AppColors.textSecondary,
                     fontSize: 14,
                   ),
                 ),
@@ -144,10 +142,10 @@ class UserMembershipCard extends StatelessWidget {
       child: Stack(
         children: [
           Container(
-            padding: const EdgeInsets.all(3), // Khoảng cách giữa viền và ảnh
+            padding: const EdgeInsets.all(3),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: AppColors.gold, width: 2), // Viền Gold
+              border: Border.all(color: AppColors.gold, width: 2),
             ),
             child: CircleAvatar(
               radius: 45,
@@ -176,12 +174,12 @@ class UserMembershipCard extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
-                  color: AppColors.bgSecondary, // Nền nút tối
+                  color: AppColors.bgSecondary,
                   shape: BoxShape.circle,
                   border: Border.all(
                     color: AppColors.gold,
                     width: 1.5,
-                  ), // Viền nút Gold
+                  ),
                 ),
                 child: const Icon(
                   Icons.edit,
@@ -211,7 +209,7 @@ class UserMembershipCard extends StatelessWidget {
           Text(
             value,
             style: TextStyle(
-              color: color, // Màu chữ theo màu icon
+              color: color,
               fontWeight: FontWeight.bold,
               fontSize: 18,
             ),
@@ -220,7 +218,7 @@ class UserMembershipCard extends StatelessWidget {
           Text(
             label,
             style: const TextStyle(
-              color: AppColors.textMuted, // Màu xám nhạt
+              color: AppColors.textMuted,
               fontSize: 12,
             ),
           ),

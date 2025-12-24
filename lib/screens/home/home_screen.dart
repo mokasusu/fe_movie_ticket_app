@@ -4,7 +4,6 @@ import '../../widgets/card/promo_slider.dart';
 import '../../widgets/card/movie_card_slider.dart';
 import '../../widgets/card/coming_soon_slider.dart';
 import '../../theme/colors.dart';
-import '../../widgets/bottomBar/bottom_nav_bar.dart';
 import '../../models/promotion.dart';
 
 class HomeScreen extends StatelessWidget {

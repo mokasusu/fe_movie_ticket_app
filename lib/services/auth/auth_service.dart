@@ -17,8 +17,6 @@ class AuthService {
       if (response.statusCode == 200 && response.data != null) {
         final data = response.data;
 
-        // 2. Logic kết hợp: Check 'authenticated' LÀ TRUE VÀ có 'token'
-        // Đây là cách an toàn nhất với JSON bạn cung cấp
         if (data["authenticated"] == true && data["token"] != null) {
 
           final token = data["token"];
