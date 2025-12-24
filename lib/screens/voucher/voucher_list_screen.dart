@@ -114,7 +114,7 @@ class _VoucherListScreenState extends State<VoucherListScreen> {
             indicatorWeight: 3,
             tabs: [
               Tab(text: "Hiện hành"),
-              Tab(text: "Hết hạn"),
+              Tab(text: "Lịch sử"),
             ],
           ),
         ),
@@ -289,7 +289,7 @@ class VoucherItemCard extends StatelessWidget {
         ),
         child: Row(
           children: [
-            // Phần trái (Cuống vé)
+            // Phần trái
             Container(
               width: 90,
               height: 100,
@@ -388,7 +388,7 @@ class VoucherItemCard extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.only(top: 4),
                         child: Text(
-                          voucher.isExpired ? "Đã hết hạn" : "Đã sử dụng",
+                          voucher.isExpired ? "Đã hết hạn" : "Đã hết số lượng",
                           style: const TextStyle(
                             fontSize: 12,
                             fontStyle: FontStyle.italic,

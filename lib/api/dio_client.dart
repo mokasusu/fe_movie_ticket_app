@@ -14,8 +14,8 @@ class DioClient {
   static final Dio dio = Dio(
     BaseOptions(
       baseUrl: _baseUrl, // 3. Gán biến vào đây
-      connectTimeout: const Duration(seconds: 60),
-      receiveTimeout: const Duration(seconds: 60),
+      connectTimeout: const Duration(seconds: 90),
+      receiveTimeout: const Duration(seconds: 90),
       headers: {
         "Content-Type": "application/json", // định dạng chuẩn
       },
