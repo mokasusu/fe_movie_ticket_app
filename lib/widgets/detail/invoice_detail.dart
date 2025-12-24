@@ -248,13 +248,10 @@ class InvoiceReceiptWidget extends StatelessWidget {
                         ),
                       ],
                     ),
-                    _buildRow(
-                      "Giảm giá",
-                      currencyFormat.format(invoice.tongTienTruocGiam ?? 0),
-                    ),
+
                     if ((invoice.soTienGiam ?? 0) > 0)
                       _buildRow(
-                        "Voucher",
+                        "Giảm giá",
                         "-${currencyFormat.format(invoice.soTienGiam)}",
                         isDiscount: true,
                       ),

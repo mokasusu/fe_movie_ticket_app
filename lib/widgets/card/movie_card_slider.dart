@@ -210,7 +210,7 @@ class _MovieCardState extends State<MovieCard> {
                                         end: Alignment.bottomCenter,
                                         colors: [
                                           Colors.transparent,
-                                          AppColors.bgPrimary.withOpacity(0.95),
+                                          AppColors.bgPrimary.withOpacity(0.8),
                                         ],
                                       ),
                                     ),

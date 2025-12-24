@@ -10,6 +10,7 @@ import '../screens/admin/admin_screen.dart';
 import '../screens/forgot_password_screen.dart';
 import '../screens/register_screen.dart';
 import '../../widgets/bottomBar/bottom_nav_bar.dart';
+import '../services/update_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -26,6 +27,15 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isPasswordVisible = false;
   bool _isLoading = false; // Biến trạng thái loading
 
+  @override
+  void initState() {
+    super.initState();
+    
+    Future.delayed(Duration(seconds: 2), () {
+      UpdateHelper.checkForUpdate(context);
+    });
+  }
+  
   @override
   void dispose() {
     _emailController.dispose();
