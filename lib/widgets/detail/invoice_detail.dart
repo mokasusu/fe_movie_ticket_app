@@ -18,7 +18,7 @@ void showInvoiceDetailPopup(BuildContext context, InvoiceResponse invoice) {
           ),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
           alignment: Alignment.center,
-          
+
           child: Material(
             color: Colors.transparent,
             child: InvoiceReceiptWidget(invoice: invoice),
@@ -116,6 +116,7 @@ class InvoiceReceiptWidget extends StatelessWidget {
                           ? dateFormat.format(invoice.ngayTao!)
                           : "N/A",
                     ),
+                    // _buildRow("Gmail", invoice.userEmail ?? ""),
                     const SizedBox(height: 10),
 
                     // --- THÔNG TIN SUẤT CHIẾU ---
@@ -139,12 +140,15 @@ class InvoiceReceiptWidget extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(height: 8),
-                          Text(
-                            invoice.tenPhim ?? "Vé xem phim",
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
+                          Center(
+                            child: Text(
+                              invoice.tenPhim ?? "Vé xem phim",
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
                             ),
                           ),
                           const SizedBox(height: 6),
@@ -225,13 +229,29 @@ class InvoiceReceiptWidget extends StatelessWidget {
                     const SizedBox(height: 10),
 
                     // --- TỔNG TIỀN ---
-                    _buildRow(
-                      "Giảm giá",
-                      currencyFormat.format(invoice.tongTienTruocGiam ?? 0),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          "Tạm tính",
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 18,
+                          ),
+                        ),
+                        Text(
+                          currencyFormat.format(invoice.tongTienTruocGiam ?? 0),
+                          style: const TextStyle(
+                            fontSize: 18,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
                     ),
+
                     if ((invoice.soTienGiam ?? 0) > 0)
                       _buildRow(
-                        "Voucher",
+                        "Giảm giá",
                         "-${currencyFormat.format(invoice.soTienGiam)}",
                         isDiscount: true,
                       ),
@@ -260,16 +280,14 @@ class InvoiceReceiptWidget extends StatelessWidget {
                     ),
 
                     const SizedBox(height: 30),
-                    const Text(
-                      "Cảm ơn quý khách!",
-                      style: TextStyle(
-                        fontStyle: FontStyle.italic,
-                        color: Colors.black,
+                    const Center(
+                      child: Text(
+                        "Cảm ơn quý khách!",
+                        style: TextStyle(
+                          fontStyle: FontStyle.italic,
+                          color: Colors.black,
+                        ),
                       ),
-                    ),
-                    const Text(
-                      "Đưa hóa đơn cho nhân viên.",
-                      style: TextStyle(fontSize: 10, color: Colors.black),
                     ),
                   ],
                 ),
@@ -361,7 +379,7 @@ class TicketClipper extends CustomClipper<Path> {
     double x = 0;
     double y = size.height;
     double yControlPoint = size.height - 15; // Độ sâu của răng cưa
-    double increment = size.width / 20; // Số lượng răng cưa (càng lớn càng mịn)
+    double increment = size.width / 20; // Số lượng răng cưa
 
     while (x < size.width) {
       path.lineTo(x + increment / 2, yControlPoint);

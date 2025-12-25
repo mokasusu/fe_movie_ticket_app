@@ -3,7 +3,20 @@ import 'package:intl/intl.dart';
 import '../../theme/colors.dart';
 import '../../utils/viet_qr.dart';
 
-class PaymentQRDialog extends StatelessWidget {
+// class PaymentQRDialog extends StatelessWidget {
+//   final double amount;
+//   final String content;
+//   final VoidCallback onPaymentSuccess;
+
+//   const PaymentQRDialog({
+//     super.key,
+//     required this.amount,
+//     required this.content,
+//     required this.onPaymentSuccess,
+//   });
+// }
+
+class PaymentQRDialog extends StatefulWidget {
   final double amount;
   final String content;
   final VoidCallback onPaymentSuccess;
@@ -16,9 +29,18 @@ class PaymentQRDialog extends StatelessWidget {
   });
 
   @override
+  State<PaymentQRDialog> createState() => _PaymentQRDialogState();
+}
+
+class _PaymentQRDialogState extends State<PaymentQRDialog> {
+  bool _isLoading = false;
+
+  @override
   Widget build(BuildContext context) {
-    // Tạo link ảnh QR
-    final qrUrl = VietQRConfig.generateURL(amount: amount, content: content);
+    final qrUrl = VietQRConfig.generateURL(
+      amount: widget.amount,
+      content: widget.content,
+    );
     final currencyFormat = NumberFormat.currency(locale: 'vi_VN', symbol: 'đ');
 
     return Dialog(
@@ -31,7 +53,11 @@ class PaymentQRDialog extends StatelessWidget {
           color: AppColors.bgElevated,
           borderRadius: BorderRadius.circular(16),
           boxShadow: const [
-            BoxShadow(color: Colors.black26, blurRadius: 10, offset: Offset(0, 10)),
+            BoxShadow(
+              color: Colors.black26,
+              blurRadius: 10,
+              offset: Offset(0, 10),
+            ),
           ],
         ),
         child: Column(
@@ -62,7 +88,7 @@ class PaymentQRDialog extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              currencyFormat.format(amount),
+              currencyFormat.format(widget.amount),
               style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -77,7 +103,7 @@ class PaymentQRDialog extends StatelessWidget {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: AppColors.gold, width: 2), // Viền vàng
+                border: Border.all(color: AppColors.gold, width: 2),
               ),
               child: Image.network(
                 qrUrl,
@@ -94,7 +120,7 @@ class PaymentQRDialog extends StatelessWidget {
                         color: AppColors.gold,
                         value: loadingProgress.expectedTotalBytes != null
                             ? loadingProgress.cumulativeBytesLoaded /
-                                loadingProgress.expectedTotalBytes!
+                                  loadingProgress.expectedTotalBytes!
                             : null,
                       ),
                     ),
@@ -105,14 +131,17 @@ class PaymentQRDialog extends StatelessWidget {
                   height: 220,
                   color: Colors.grey[100],
                   child: const Center(
-                    child: Text("Lỗi tải mã QR\nVui lòng thử lại", textAlign: TextAlign.center),
+                    child: Text(
+                      "Lỗi tải mã QR\nVui lòng thử lại",
+                      textAlign: TextAlign.center,
+                    ),
                   ),
                 ),
               ),
             ),
 
             const SizedBox(height: 16),
-            
+
             // 4. Nội dung chuyển khoản
             Container(
               padding: const EdgeInsets.all(12),
@@ -122,12 +151,20 @@ class PaymentQRDialog extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.description, size: 16, color: AppColors.textMuted),
+                  const Icon(
+                    Icons.description,
+                    size: 16,
+                    color: AppColors.textMuted,
+                  ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      "Nội dung: $content",
-                      style: const TextStyle(color: AppColors.textMuted, fontWeight: FontWeight.bold, fontSize: 13),
+                      "Nội dung: ${widget.content}",
+                      style: const TextStyle(
+                        color: AppColors.textMuted,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13,
+                      ),
                     ),
                   ),
                 ],
@@ -140,20 +177,38 @@ class PaymentQRDialog extends StatelessWidget {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: onPaymentSuccess,
+                onPressed: _isLoading
+                    ? null
+                    : () async {
+                        setState(() => _isLoading = true);
+                        await Future.delayed(const Duration(milliseconds: 600));
+                        widget.onPaymentSuccess();
+                        if (mounted) setState(() => _isLoading = false);
+                      },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.gold,
                   padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                ),
-                child: const Text(
-                  "Tôi đã thanh toán",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
                   ),
                 ),
+                child: _isLoading
+                    ? const SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(
+                          color: Colors.black,
+                          strokeWidth: 2.5,
+                        ),
+                      )
+                    : const Text(
+                        "Tôi đã thanh toán",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
               ),
             ),
           ],

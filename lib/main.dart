@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:home/screens/intro_screen.dart';
+import 'package:home/screens/login_screen.dart';
 import 'widgets/bottomBar/bottom_nav_bar.dart';
 import 'utils/global_keys.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -32,7 +33,7 @@ class MovieApp extends StatelessWidget {
         fontFamily: 'Roboto',
       ),
       navigatorKey: AppGlobalKeys.navigatorKey,
-      routes: {'/login': (context) => const BottomNavBar()},
+      routes: {'/login': (context) => const LoginScreen()},
       home: const IntroScreen(),
     );
   }

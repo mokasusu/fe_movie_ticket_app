@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../models/userRequest.dart';
 import '../services/api/user_service.dart';
+import 'login_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -129,35 +129,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     final success = await UserService.registerUser(userData);
 
-    // Nếu đăng ký thành công, tự động cập nhật avatar mặc định
-    if (success) {
-
-      final user = await UserService.getMyInfo();
-
-      if (user != null) {
-        await UserService.updateUserProfile(
-          user.id,
-          UserRequest(
-            hoTen: user.hoTen,
-            gioiTinh: user.gioiTinh,
-            ngaySinh: DateTime.parse(user.ngaySinh),
-            anhURL: 'assets/images/avatar/default_avt.jpg',
-          ),
-        );
-      }
-    }
-
     setState(() => isLoading = false);
+
+    if (!mounted) return;
 
     if (success) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text("Đăng ký thành công")));
-      Navigator.pop(context);
-    } else {
-      ScaffoldMessenger.of(
+      // Chuyển về màn hình đăng nhập
+      Navigator.pushAndRemoveUntil(
         context,
-      ).showSnackBar(const SnackBar(content: Text("Đăng ký thất bại")));
+        MaterialPageRoute(builder: (_) => const LoginScreen()),
+        (route) => false,
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("email đã được sử dụng, vui lòng thử lại")),
+      );
     }
   }
 }

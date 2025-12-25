@@ -4,6 +4,7 @@ import '../../screens/userInfomation/profile.dart';
 import '../../screens/userInfomation/invoice_screen.dart';
 import '../../services/api/user_service.dart';
 import '../../models/user.dart';
+import '../../services/auth/auth_service.dart';
 
 class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
   const CustomAppBar({super.key});
@@ -25,6 +26,15 @@ class _CustomAppBarState extends State<CustomAppBar> {
   }
 
   Future<void> _loadUserInfo() async {
+    final isLoggedIn = await AuthService.isLoggedIn();
+    if (!isLoggedIn) {
+      if (mounted) {
+        setState(() {
+          _user = null;
+        });
+      }
+      return;
+    }
     final user = await UserService.getMyInfo();
     if (mounted) {
       setState(() {
@@ -38,11 +48,22 @@ class _CustomAppBarState extends State<CustomAppBar> {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const UserProfileScreen()),
-    );
+    ).then((_) {
+      _loadUserInfo();
+    });
   }
 
   // Hàm xử lý khi nhấn nút Lịch sử Đặt vé
   void _handleHistoryClick(BuildContext context) async {
+    // Kiểm tra đăng nhập trước
+    final isLoggedIn = await AuthService.isLoggedIn();
+    if (!isLoggedIn) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Vui lòng đăng nhập để xem lịch sử!')),
+      );
+      return;
+    }
+
     // Lấy userId từ UserService
     final user = await UserService.getMyInfo();
     if (user == null || user.id == null) {
@@ -57,11 +78,15 @@ class _CustomAppBarState extends State<CustomAppBar> {
         builder: (context) => InvoiceHistoryScreen(userId: user.id),
       ),
     );
-    print('Nút Lịch sử Đặt vé đã được nhấn!');
   }
 
   @override
   Widget build(BuildContext context) {
+    // Xác định đường dẫn avatar
+    String? avatarUrl = _user?.anhURL;
+    if (avatarUrl == null || avatarUrl.isEmpty) {
+      avatarUrl = 'assets/avatar/default_avt.jpg';
+    }
     return AppBar(
       toolbarHeight: widget.preferredSize.height,
       backgroundColor: AppColors.bgPrimary,
@@ -71,7 +96,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
       leading: Padding(
         padding: const EdgeInsets.only(left: 8.0),
         child: IconButton(
-          icon: _user?.anhURL != null && _user!.anhURL!.isNotEmpty
+          icon: avatarUrl.isNotEmpty
               ? Container(
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
@@ -79,9 +104,9 @@ class _CustomAppBarState extends State<CustomAppBar> {
                   ),
                   child: CircleAvatar(
                     radius: 18,
-                    backgroundImage: _user!.anhURL!.startsWith('assets/')
-                        ? AssetImage(_user!.anhURL!) as ImageProvider
-                        : NetworkImage(_user!.anhURL!),
+                    backgroundImage: avatarUrl.startsWith('assets/')
+                        ? AssetImage(avatarUrl) as ImageProvider
+                        : NetworkImage(avatarUrl),
                     backgroundColor: Colors.transparent,
                   ),
                 )
